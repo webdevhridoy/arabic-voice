@@ -1,10 +1,11 @@
 import { z } from "zod";
 
 const serverSchema = z.object({
-  DATABASE_URL: z.string().optional().default("file:./dev.db"),
+  DATABASE_URL: z.string().optional().default("file:./prisma/dev.db"),
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
-  ELEVENLABS_API_KEY: z.string().min(1),
+  // Optional in dev — app will still run but TTS will fail at generation time
+  ELEVENLABS_API_KEY: z.string().optional().default(""),
   GROQ_API_KEY: z.string().optional(),
   SUPABASE_URL: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
@@ -48,12 +49,21 @@ export function validateEnv() {
     if (!parsedClient.success) {
       console.error(parsedClient.error.flatten().fieldErrors);
     }
-    throw new Error("Invalid environment variables");
+    // In development, warn but don't crash so the UI can still be developed
+    if (process.env.NODE_ENV !== "development") {
+      throw new Error("Invalid environment variables");
+    }
+    return;
   }
 
   // Bind to singleton
   env.server = parsedServer.data;
   env.client = parsedClient.data;
+
+  // Warn if ElevenLabs key is missing
+  if (!env.server.ELEVENLABS_API_KEY) {
+    console.warn("⚠️  ELEVENLABS_API_KEY is not set. TTS generation will fail until you add it to .env.local");
+  }
 }
 
 // Automatically runs explicitly when imported (for Node modules like Worker/API)
