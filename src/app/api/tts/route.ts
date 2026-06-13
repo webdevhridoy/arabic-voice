@@ -4,9 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { checkUsageLimit } from "@/lib/usage";
 import { normalizeArabicText, generateTextHash } from "@/lib/utils/arabic";
 import { generateAudioBuffer } from "@/lib/tts/index";
-import fs from "fs";
-import path from "path";
-
+import { checkTtsRateLimit } from "@/lib/rate-limit";
 import { getAnonymousId } from "@/lib/get-ip";
 
 // Removed Upstash and BullMQ for purely local synchronous generation workflow
@@ -17,6 +15,15 @@ export async function POST(req: Request) {
     let { userId } = await auth();
     if (!userId) {
       userId = await getAnonymousId();
+    }
+
+    // ── Rate Limiting ─────────────────────────────────────────────────────
+    const rateCheck = await checkTtsRateLimit(userId);
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait a moment before generating again.", remaining: 0 },
+        { status: 429, headers: { "Retry-After": "60" } }
+      );
     }
 
     const body = await req.json();
