@@ -9,8 +9,8 @@ export async function checkUsageLimit(userId: string, requestedCharacters: numbe
   const planId = subscription?.plan || "free";
   const plan = await prisma.plan.findFirst({ where: { name: planId } });
 
-  // Free tier default: 5,000 chars lifetime. Paid plans use their purchased limit.
-  const limit = plan?.characterLimit ?? (planId === "free" ? 5000 : 50_000);
+  // Free tier default: 10,000 chars lifetime. Paid plans use their purchased limit.
+  const limit = plan?.characterLimit ?? (planId === "free" ? 10_000 : 100_000);
 
   // 2. Determine the period start for usage aggregation
   let usageSum = 0;

@@ -8,30 +8,23 @@ export const PLANS = {
   starter: {
     name:      "Starter",
     amount:    499,       // $4.99
-    chars:     50_000,
-    label:     "50,000 حرف",
-    minutes:   "~60 دقيقة",
+    chars:     100_000,
+    label:     "100,000 characters",
+    minutes:   "~120 minutes",
   },
   pro: {
     name:      "Pro",
     amount:    999,       // $9.99
-    chars:     200_000,
-    label:     "200,000 حرف",
-    minutes:   "~155 دقيقة",
+    chars:     300_000,
+    label:     "300,000 characters",
+    minutes:   "~360 minutes",
   },
-  business: {
-    name:      "Business",
-    amount:    2499,      // $24.99
-    chars:     600_000,
-    label:     "600,000 حرف",
-    minutes:   "~476 دقيقة",
-  },
-  enterprise: {
-    name:      "Enterprise",
-    amount:    4999,      // $49.99
-    chars:     1_500_000,
-    label:     "1,500,000 حرف",
-    minutes:   "~1,190 دقيقة",
+  power: {
+    name:      "Power",
+    amount:    1999,      // $19.99
+    chars:     1_000_000,
+    label:     "1,000,000 characters",
+    minutes:   "~1,200 minutes",
   },
 } as const;
 

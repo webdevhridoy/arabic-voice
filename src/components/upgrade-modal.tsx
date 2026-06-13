@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Zap, Crown, Sparkles, TrendingUp, Loader2 } from "lucide-react";
+import { X, Zap, Crown, Sparkles, Loader2 } from "lucide-react";
 
 interface UpgradeModalProps {
   open: boolean;
@@ -14,10 +14,10 @@ interface UpgradeModalProps {
 const PLANS = [
   {
     id: "starter",
-    chars: "50,000",
+    chars: "100,000",
     price: "$4.99",
     priceAr: "٤.٩٩ دولار",
-    minutes: "~60",
+    minutes: "~120",
     label: "Starter",
     labelAr: "المبتدئ",
     icon: <Zap className="w-4 h-4" />,
@@ -28,10 +28,10 @@ const PLANS = [
   },
   {
     id: "pro",
-    chars: "200,000",
+    chars: "300,000",
     price: "$9.99",
     priceAr: "٩.٩٩ دولار",
-    minutes: "~155",
+    minutes: "~360",
     label: "Pro",
     labelAr: "المحترف",
     icon: <Crown className="w-4 h-4" />,
@@ -41,32 +41,18 @@ const PLANS = [
     priceId: "price_pro",
   },
   {
-    id: "business",
-    chars: "600,000",
-    price: "$24.99",
-    priceAr: "٢٤.٩٩ دولار",
-    minutes: "~476",
-    label: "Business",
-    labelAr: "الأعمال",
+    id: "power",
+    chars: "1,000,000",
+    price: "$19.99",
+    priceAr: "١٩.٩٩ دولار",
+    minutes: "~1,200",
+    label: "Power",
+    labelAr: "باور",
     icon: <Sparkles className="w-4 h-4" />,
-    color: "border-white/10 hover:border-[#20C7B7]/50",
-    badge: null,
-    badgeAr: null,
-    priceId: "price_business",
-  },
-  {
-    id: "enterprise",
-    chars: "1,500,000",
-    price: "$49.99",
-    priceAr: "٤٩.٩٩ دولار",
-    minutes: "~1,190",
-    label: "Enterprise",
-    labelAr: "المؤسسات",
-    icon: <TrendingUp className="w-4 h-4" />,
     color: "border-white/10 hover:border-[#20C7B7]/50",
     badge: "Best Value",
     badgeAr: "الأوفر",
-    priceId: "price_enterprise",
+    priceId: "price_power",
   },
 ] as const;
 

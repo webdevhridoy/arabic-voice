@@ -84,6 +84,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
   // This explicitly closes the loophole and prevents users from pasting 5000 chars
   // if they have less than that remaining in their lifetime/monthly quota.
   const CHAR_LIMIT = usage ? Math.max(0, Math.min(5000, usage.remaining)) : 5000;
+  const isAr = lang === "ar";
 
   const [text, setText] = useState("");
   const [url, setUrl] = useState("");
@@ -225,10 +226,10 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "completed": return <Badge className="bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20 shadow-sm">مكتمل</Badge>;
-      case "processing": return <Badge className="bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20 shadow-sm animate-pulse">جاري المعالجة</Badge>;
-      case "pending": return <Badge className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20 shadow-sm">في الانتظار</Badge>;
-      case "failed": return <Badge variant="destructive" className="bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 shadow-sm">فشل</Badge>;
+      case "completed": return <Badge className="bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20 shadow-sm">{isAr ? "مكتمل" : "Completed"}</Badge>;
+      case "processing": return <Badge className="bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20 shadow-sm animate-pulse">{isAr ? "جاري المعالجة" : "Processing"}</Badge>;
+      case "pending": return <Badge className="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20 shadow-sm">{isAr ? "في الانتظار" : "Pending"}</Badge>;
+      case "failed": return <Badge variant="destructive" className="bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 shadow-sm">{isAr ? "فشل" : "Failed"}</Badge>;
       default: return <Badge variant="secondary" className="shadow-sm">{status}</Badge>;
     }
   };
@@ -239,7 +240,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8" dir="rtl">
+    <div className="max-w-4xl mx-auto space-y-8" dir={isAr ? "rtl" : "ltr"}>
       {/* Success Toast */}
       {successMessage && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-teal-500 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5 fade-in duration-300 font-cairo">
@@ -262,10 +263,10 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
       {upgraded && (
         <div className="flex items-center gap-3 bg-teal-500/10 border border-teal-500/20 text-teal-400 rounded-2xl px-5 py-4 font-cairo">
           <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-teal-400" />
-          <div className="flex-1 text-right">
-            <p className="font-bold text-sm">تمت الترقية بنجاح! 🎉</p>
+          <div className={`flex-1 ${isAr ? "text-right" : "text-left"}`}>
+            <p className="font-bold text-sm">{isAr ? "تمت الترقية بنجاح! 🎉" : "Upgrade successful! 🎉"}</p>
             <p className="text-xs text-teal-500/80 mt-0.5">
-              خطة <span className="font-bold capitalize">{upgradedPlan}</span> مفعّلة — يمكنك الآن توليد المزيد من الصوت العربي.
+              {isAr ? <>خطة <span className="font-bold capitalize">{upgradedPlan}</span> مفعّلة — يمكنك الآن توليد المزيد من الصوت العربي.</> : <><span className="font-bold capitalize">{upgradedPlan}</span> plan activated — you can now generate more audio.</>}
             </p>
           </div>
         </div>
@@ -277,9 +278,9 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full relative z-10">
           <TabsList className="grid w-full grid-cols-3 mb-6 bg-gray-900 border border-gray-800 dark:bg-[#0B1020] dark:border-white/5 p-1 rounded-xl shadow-inner transition-colors">
-            <TabsTrigger value="text" className="font-cairo data-[state=active]:bg-gray-800 dark:data-[state=active]:bg-[#121936] data-[state=active]:text-white text-gray-400 hover:text-gray-300">تحويل نص (Text)</TabsTrigger>
-            <TabsTrigger value="audio" className="font-cairo data-[state=active]:bg-gray-800 dark:data-[state=active]:bg-[#121936] data-[state=active]:text-white text-gray-400 hover:text-gray-300">تغيير الصوت (Audio)</TabsTrigger>
-            <TabsTrigger value="url" className="font-cairo data-[state=active]:bg-gray-800 dark:data-[state=active]:bg-[#121936] data-[state=active]:text-white text-gray-400 hover:text-gray-300">رابط مقال (URL)</TabsTrigger>
+            <TabsTrigger value="text" className="font-cairo data-[state=active]:bg-gray-800 dark:data-[state=active]:bg-[#121936] data-[state=active]:text-white text-gray-400 hover:text-gray-300">{isAr ? "تحويل نص" : "Text"}</TabsTrigger>
+            <TabsTrigger value="audio" className="font-cairo data-[state=active]:bg-gray-800 dark:data-[state=active]:bg-[#121936] data-[state=active]:text-white text-gray-400 hover:text-gray-300">{isAr ? "تغيير الصوت" : "Audio"}</TabsTrigger>
+            <TabsTrigger value="url" className="font-cairo data-[state=active]:bg-gray-800 dark:data-[state=active]:bg-[#121936] data-[state=active]:text-white text-gray-400 hover:text-gray-300">{isAr ? "رابط مقال" : "URL"}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="text" className="space-y-4">
@@ -294,7 +295,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                   setText(newVal);
                 }
               }}
-              placeholder="اكتب النص العربي هنا..."
+              placeholder={isAr ? "اكتب النص العربي هنا..." : "Type your text here..."}
               className={`w-full h-40 bg-gray-50 dark:bg-[#0B1020] border rounded-xl p-4 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent resize-none font-cairo disabled:opacity-50 transition-colors placeholder-gray-400 dark:placeholder-gray-600 shadow-inner ${
                 text.length >= CHAR_LIMIT
                   ? "border-red-500/60 focus:ring-red-500"
@@ -310,10 +311,10 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                 text.length >= CHAR_LIMIT ? "text-red-500 font-bold" :
                 text.length >= CHAR_LIMIT * 0.9 ? "text-yellow-500" : "text-gray-500"
               }`}>
-                {text.length} / {CHAR_LIMIT} حرف
-                {text.length >= CHAR_LIMIT && " — تجاوزت الحد!"}
+                {text.length} / {CHAR_LIMIT} {isAr ? "حرف" : "chars"}
+                {text.length >= CHAR_LIMIT && (isAr ? " — تجاوزت الحد!" : " — Limit reached!")}
               </span>
-              <span className="text-gray-500">متبقي {usage?.remaining?.toLocaleString() ?? 0}</span>
+              <span className="text-gray-500">{isAr ? `متبقي ${usage?.remaining?.toLocaleString() ?? 0}` : `${usage?.remaining?.toLocaleString() ?? 0} remaining`}</span>
             </div>
 
             {/* Limit reached warning */}
@@ -323,10 +324,10 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                 className="w-full flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm font-cairo hover:bg-red-500/15 transition-colors"
               >
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span className="flex-1 text-right">
-                  انتهى حد الاستخدام المجاني ({(usage.currentUsage ?? 0).toLocaleString()} / {(usage.limit ?? 0).toLocaleString()} حرف)
+                <span className={`flex-1 ${isAr ? "text-right" : "text-left"}`}>
+                  {isAr ? `انتهى حد الاستخدام المجاني (${(usage.currentUsage ?? 0).toLocaleString()} / ${(usage.limit ?? 0).toLocaleString()} حرف)` : `Free limit reached (${(usage.currentUsage ?? 0).toLocaleString()} / ${(usage.limit ?? 0).toLocaleString()} chars)`}
                 </span>
-                <span className="text-[#7C5CFF] font-bold text-xs whitespace-nowrap">ترقية الآن ←</span>
+                <span className="text-[#7C5CFF] font-bold text-xs whitespace-nowrap">{isAr ? "ترقية الآن ←" : "Upgrade →"}</span>
               </button>
             )}
           </TabsContent>
@@ -349,9 +350,9 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                 <svg className={`h-10 w-10 mb-4 ${audioFile ? 'text-[#20C7B7]' : 'text-gray-400 dark:text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
-                <span className="text-gray-900 dark:text-white font-cairo text-lg font-semibold">
-                  {audioFile ? audioFile.name : "اضغط لرفع ملف صوتي (Upload Audio)"}
-                </span>
+                 <span className="text-gray-900 dark:text-white font-cairo text-lg font-semibold">
+                   {audioFile ? audioFile.name : (isAr ? "اضغط لرفع ملف صوتي" : "Click to upload audio file")}
+                 </span>
                 <span className="text-gray-500 text-xs mt-2">MP3, WAV up to 10MB</span>
               </label>
             </div>
@@ -367,7 +368,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
               dir="ltr"
               disabled={isSubmitting || !!(usage && !usage?.allowed)}
             />
-            <div className="text-xs text-gray-500 font-cairo pr-2">سيتم استخراج المقال ووضعه في مربع النص تلقائياً (Will extract article into text box)</div>
+             <div className="text-xs text-gray-500 font-cairo pr-2">{isAr ? "سيتم استخراج المقال ووضعه في مربع النص تلقائياً" : "Article text will be extracted into the text box automatically"}</div>
           </TabsContent>
         </Tabs>
 
@@ -375,7 +376,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
           {activeTab !== "audio" && <div className="mt-6 border-t border-gray-200 dark:border-white/5 pt-5 space-y-4">
 
             {/* ── Persistent Upgrade Plan button (Free Users Only) ───────────────── */}
-            {(!usage || usage.limit <= 5000) && (
+            {(!usage || usage.limit <= 10_000) && (
               <button
                 onClick={() => setShowUpgrade(true)}
                 disabled={isSubmitting}
@@ -383,10 +384,10 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
               >
                 <div className="flex items-center gap-2 font-cairo font-bold">
                   <Crown className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  ترقية الخطة (Upgrade Plan)
+                  {isAr ? "ترقية الخطة" : "Upgrade Plan"}
                 </div>
                 <span className="text-xs font-mono font-bold bg-[#7C5CFF]/10 px-2.5 py-1 rounded-md text-[#7C5CFF]">
-                  الحد المتبقي: {usage?.remaining ? usage.remaining.toLocaleString() : "جاري التحميل..."}
+                  {isAr ? `الحد المتبقي: ${usage?.remaining ? usage.remaining.toLocaleString() : "جاري التحميل..."}` : `${usage?.remaining ? usage.remaining.toLocaleString() : "Loading..."} remaining`}
                 </span>
               </button>
             )}
@@ -394,7 +395,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
             {/* ── Dialect picker ───────────────────────────────── */}
             <div>
               <label className="text-xs text-gray-500 dark:text-gray-500 font-semibold uppercase tracking-widest block mb-2">
-                اللهجة (Dialect)
+                {isAr ? "اللهجة" : "Dialect"}
               </label>
               <div className="relative" dir="ltr">
                 <button
@@ -408,7 +409,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                       return (
                         <>
                           <span className="text-base">{d?.flag}</span>
-                          <span className="font-semibold text-sm">{d?.label} ({d?.labelEn})</span>
+                          <span className="font-semibold text-sm">{isAr ? `${d?.label}` : `${d?.labelEn}`}</span>
                           <span className="text-gray-400">·</span>
                           <span className="text-xs text-gray-500">{d?.desc}</span>
                         </>
@@ -439,7 +440,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                             }`}
                           >
                             <span className="text-base flex-shrink-0">{d.flag}</span>
-                            <span className="font-semibold text-sm flex-shrink-0">{d.label} ({d.labelEn})</span>
+                            <span className="font-semibold text-sm flex-shrink-0">{isAr ? d.label : d.labelEn}</span>
                             <span className="text-xs text-gray-500 dark:text-gray-400 ms-auto">{d.desc}</span>
                           </button>
                         );
@@ -453,7 +454,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
             {/* ── Voice dropdown ───────────────────────────────── */}
             <div>
               <label className="text-xs text-gray-500 dark:text-gray-500 font-semibold uppercase tracking-widest block mb-2">
-                الصوت (Voice)
+                {isAr ? "الصوت" : "Voice"}
               </label>
 
               <div className="relative" dir="ltr">
@@ -471,7 +472,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                         <>
                           <span className="text-base">{d?.flag}</span>
                           <div className={`w-2 h-2 rounded-full ${dotColor}`} />
-                          <span className="font-semibold text-sm">{v.nameAr} ({v.nameEn})</span>
+                          <span className="font-semibold text-sm">{isAr ? v.nameAr : v.nameEn}</span>
                           <span className="text-gray-400">·</span>
                           <span className="text-xs text-gray-500">{v.style}</span>
                         </>
@@ -498,14 +499,14 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                             }`}
                           >
                             <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isSelected ? "bg-[#7C5CFF]" : dotColor}`} />
-                            <span className="font-semibold text-sm flex-shrink-0">{v.nameAr} ({v.nameEn})</span>
+                            <span className="font-semibold text-sm flex-shrink-0">{isAr ? v.nameAr : v.nameEn}</span>
                             <span className="text-xs text-gray-400 flex-shrink-0">
-                              {v.gender === "female" ? "أنثى · Female" : "ذكر · Male"}
+                              {v.gender === "female" ? (isAr ? "أنثى" : "Female") : (isAr ? "ذكر" : "Male")}
                             </span>
                             <span className="text-xs text-gray-500 dark:text-gray-400 ms-auto">{v.style}</span>
                             {v.popular && (
                               <span className="text-[10px] font-bold text-[#7C5CFF] bg-[#7C5CFF]/10 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                                شائع
+                                {isAr ? "شائع" : "Popular"}
                               </span>
                             )}
                           </button>
@@ -520,7 +521,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
             {/* ── Speed dropdown ───────────────────────────────── */}
             <div>
               <label className="text-xs text-gray-500 dark:text-gray-500 font-semibold uppercase tracking-widest block mb-2">
-                سرعة التشغيل (Playback Speed)
+                {isAr ? "سرعة التشغيل" : "Playback Speed"}
               </label>
 
               <div className="relative" dir="ltr">
@@ -535,7 +536,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                       return (
                         <>
                           <span className="text-base">{s.icon}</span>
-                          <span className="font-semibold text-sm">{s.label} ({s.labelEn})</span>
+                          <span className="font-semibold text-sm">{isAr ? s.label : s.labelEn}</span>
                           <span className="text-gray-400">·</span>
                           <span className="text-xs text-gray-500">{s.value}x</span>
                         </>
@@ -561,7 +562,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                             }`}
                           >
                             <span className="text-base flex-shrink-0">{s.icon}</span>
-                            <span className="font-semibold text-sm flex-shrink-0">{s.label} ({s.labelEn})</span>
+                            <span className="font-semibold text-sm flex-shrink-0">{isAr ? s.label : s.labelEn}</span>
                             <span className="text-xs text-gray-500 dark:text-gray-400 ms-auto">{s.value}x</span>
                           </button>
                         );
@@ -588,9 +589,9 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                 <div className="absolute inset-0 w-full h-full bg-white/20 scale-x-0 group-hover:scale-x-100 origin-right transition-transform" />
                 <span className="relative flex items-center gap-2">
                   {isSubmitting ? (
-                    <><Loader2 className="w-5 h-5 animate-spin" /> جاري التوليد</>
+                    <><Loader2 className="w-5 h-5 animate-spin" /> {isAr ? "جاري التوليد" : "Generating..."}</>
                   ) : (
-                    <>توليد الصوت (Generate)</>
+                    <>{isAr ? "توليد الصوت" : "Generate Audio"}</>
                   )}
                 </span>
               </button>
@@ -621,15 +622,15 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
       {/* History List */}
       <section className="bg-white dark:bg-[#121936] rounded-2xl p-6 border border-gray-200 dark:border-white/5 shadow-xl transition-colors">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-cairo text-lg text-gray-900 dark:text-white font-bold">سجل التوليد (History)</h3>
+          <h3 className="font-cairo text-lg text-gray-900 dark:text-white font-bold">{isAr ? "سجل التوليد" : "Generation History"}</h3>
           {!generations && <Loader2 className="w-4 h-4 animate-spin text-gray-400 dark:text-gray-500" />}
         </div>
         
         <div className="space-y-3">
           {!generations ? (
-             <div className="text-gray-500 text-center py-12 font-cairo bg-gray-50 dark:bg-[#0B1020] rounded-xl border border-gray-200 dark:border-white/5 animate-pulse transition-colors">جاري تحميل السجل...</div>
+             <div className="text-gray-500 text-center py-12 font-cairo bg-gray-50 dark:bg-[#0B1020] rounded-xl border border-gray-200 dark:border-white/5 animate-pulse transition-colors">{isAr ? "جاري تحميل السجل..." : "Loading history..."}</div>
           ) : generations.length === 0 ? (
-            <div className="text-gray-500 text-center py-12 font-cairo bg-gray-50 dark:bg-[#0B1020] rounded-xl border border-gray-200 dark:border-white/5 transition-colors">لا يوجد سجلات حتى الآن</div>
+            <div className="text-gray-500 text-center py-12 font-cairo bg-gray-50 dark:bg-[#0B1020] rounded-xl border border-gray-200 dark:border-white/5 transition-colors">{isAr ? "لا يوجد سجلات حتى الآن" : "No generations yet"}</div>
           ) : (
             generations.map((gen, i) => (
               <div key={(gen.id as string) || i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 dark:bg-[#0B1020] rounded-xl border border-gray-200 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/10 transition-colors group gap-4 shadow-sm">
@@ -671,7 +672,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                   {gen.status === "completed" && gen.audioUrl && (
                     <div className="text-[11px] text-[#7C5CFF] hover:text-[#9B82FF] transition-colors font-cairo font-bold">
                       <a href={gen.audioUrl as string} download={`sawti-${gen.id}.mp3`} target="_blank" rel="noreferrer" className="flex items-center gap-1">
-                        تحميل الصوت (Download)
+                        {isAr ? "تحميل الصوت" : "Download"}
                       </a>
                     </div>
                   )}
@@ -683,7 +684,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                         setVoiceId(gen.voiceId as VoiceId);
                       }}
                     >
-                      إعادة المحاولة (Retry)
+                      {isAr ? "إعادة المحاولة" : "Retry"}
                     </button>
                   )}
                 </div>
