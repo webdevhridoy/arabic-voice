@@ -57,8 +57,11 @@ export async function generateElevenLabsAudio(text: string, internalVoiceId: str
       },
       body: JSON.stringify({
         text,
-        model_id: "eleven_multilingual_v2",
-        output_format: "mp3_44100_128",
+        // eleven_flash_v2_5: ~75ms inference vs ~300ms for multilingual_v2
+        // Fully supports Arabic text — trades marginal quality for 3-4x speed
+        model_id: "eleven_flash_v2_5",
+        // Lower bitrate = smaller payload = faster network transfer
+        output_format: "mp3_22050_32",
       })
     });
 
@@ -94,3 +97,35 @@ export async function generateElevenLabsAudio(text: string, internalVoiceId: str
     throw error;
   }
 }
+
+/**
+ * Returns the raw fetch Response from the ElevenLabs streaming endpoint.
+ * The caller can pipe response.body directly to the browser for near-instant playback.
+ */
+export async function streamElevenLabsAudio(text: string, internalVoiceId: string): Promise<Response> {
+  const targetVoiceId = VOICE_MAP[internalVoiceId] || VOICE_MAP["ali"];
+
+  const response = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${targetVoiceId}/stream`,
+    {
+      method: "POST",
+      headers: {
+        "xi-api-key": process.env.ELEVENLABS_API_KEY || "",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text,
+        model_id: "eleven_flash_v2_5",
+        output_format: "mp3_22050_32",
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`ElevenLabs stream error ${response.status}: ${errText}`);
+  }
+
+  return response;
+}
+

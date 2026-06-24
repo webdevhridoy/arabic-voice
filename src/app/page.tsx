@@ -40,9 +40,9 @@ const trustIcons = [
 ];
 const trustHover  = ["hover:text-primary", "hover:text-secondary", "hover:text-accent", "hover:text-primary"];
 const stepStyles  = [
-  { num: "bg-background border border-border text-primary group-hover:shadow-[0_0_20px_rgba(124,92,255,0.3)] group-hover:border-primary/50", hTitle: "group-hover:text-primary" },
-  { num: "bg-primary text-primary-foreground shadow-md group-hover:shadow-[0_0_30px_rgba(124,92,255,0.5)]",                                   hTitle: "group-hover:text-primary" },
-  { num: "bg-background border border-border text-secondary group-hover:shadow-[0_0_20px_rgba(32,199,183,0.3)] group-hover:border-secondary/50", hTitle: "group-hover:text-secondary" },
+  { num: "bg-card border-2 border-border text-primary", hTitle: "text-foreground" },
+  { num: "bg-primary text-white shadow-[0_4px_20px_-4px_rgba(124,92,255,0.5)]",  hTitle: "text-primary" },
+  { num: "bg-card border-2 border-border text-secondary", hTitle: "text-foreground" },
 ];
 const chipColors = [
   "hover:bg-primary hover:text-primary-foreground hover:border-primary hover:shadow-[0_10px_20px_-10px_rgba(124,92,255,0.5)]",
@@ -245,39 +245,42 @@ export default function HomePage() {
       />
 
       {/* ── Background ─────── */}
-      <div className="fixed inset-0 -z-30 bg-gradient-to-tr from-background via-background to-background transition-colors duration-300" />
-      <div className="fixed top-[-5%] right-[-10%] w-[700px] h-[700px] bg-primary/25 rounded-full blur-[140px] -z-20 pointer-events-none animate-pulse" style={{ animationDuration: "6s" }} />
-      <div className="fixed bottom-[-10%] left-[-15%] w-[800px] h-[800px] bg-secondary/20 rounded-full blur-[140px] -z-20 pointer-events-none animate-pulse" style={{ animationDuration: "10s" }} />
-      <div className="fixed top-[30%] left-[10%] w-[500px] h-[500px] bg-accent/15 rounded-full blur-[120px] -z-20 pointer-events-none animate-pulse" style={{ animationDuration: "8s" }} />
-      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-transparent via-background/40 to-background dark:to-black/95 pointer-events-none" />
+      <div className="fixed inset-0 -z-30 bg-background transition-colors duration-300" />
+      {/* Soft top-left teal glow (matches design attachment) */}
+      <div className="fixed top-0 left-0 w-[700px] h-[700px] hero-left-glow -z-20 pointer-events-none" />
+      {/* Subtle top-right purple */}
+      <div className="fixed top-[-5%] right-[-8%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-20 pointer-events-none animate-pulse" style={{ animationDuration: "9s" }} />
+      <div className="fixed inset-0 -z-10 bg-gradient-to-b from-transparent via-transparent to-background/60 pointer-events-none" />
 
       {/* ── Nav ───────────── */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border transition-colors duration-300">
-        <div className="flex justify-between items-center max-w-7xl mx-auto px-6 h-20">
+      <nav className="fixed top-0 w-full z-50 bg-background/75 backdrop-blur-2xl border-b border-border/60 transition-colors duration-300">
+        <div className="flex justify-between items-center max-w-7xl mx-auto px-6 h-[68px]">
           <div className="flex items-center gap-10">
-            <Link href="/" className="group text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-primary group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
-              صوتي
+            <Link href="/" className="group flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 shadow-[0_0_12px_rgba(124,92,255,0.4)]">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xl font-bold text-foreground tracking-tight">صوتي</span>
             </Link>
-            <div className="hidden md:flex gap-8 items-center">
-              <Link className="text-muted-foreground hover:text-primary hover:-translate-y-0.5 font-medium transition-all duration-300" href="#demo">{t.nav.voices}</Link>
-              <Link className="text-muted-foreground hover:text-primary hover:-translate-y-0.5 font-medium transition-all duration-300" href="#features">{t.nav.features}</Link>
-              <Link className="text-muted-foreground hover:text-primary hover:-translate-y-0.5 font-medium transition-all duration-300" href="#pricing">{t.nav.pricing}</Link>
+            <div className="hidden md:flex gap-7 items-center">
+              <Link className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors duration-200" href="#demo">{t.nav.voices}</Link>
+              <Link className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors duration-200" href="#features">{t.nav.features}</Link>
+              <Link className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors duration-200" href="#pricing">{t.nav.pricing}</Link>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <ModeToggle />
             <LangToggle lang={lang} onToggle={handleLangToggle} />
             
             {isLoaded && !userId && (
               <>
                 <SignInButton mode="modal">
-                  <button className="text-muted-foreground hover:text-primary hover:-translate-y-0.5 font-medium px-5 py-2 hidden sm:block transition-all duration-300">
+                  <button className="text-muted-foreground hover:text-foreground text-sm font-medium px-4 py-2 hidden sm:block transition-colors duration-200">
                     {t.nav.signIn}
                   </button>
                 </SignInButton>
                 <SignInButton mode="modal">
-                  <Button className="px-6 py-2 bg-primary text-primary-foreground rounded-full font-semibold hover:shadow-[0_0_20px_rgba(124,92,255,0.4)] hover:scale-105 active:scale-95 transition-all duration-300">
+                  <Button className="px-5 py-2 h-9 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary/90 hover:shadow-[0_0_18px_rgba(124,92,255,0.45)] active:scale-95 transition-all duration-200">
                     {t.nav.startNow}
                   </Button>
                 </SignInButton>
@@ -287,7 +290,7 @@ export default function HomePage() {
             {isLoaded && userId && (
               <>
                 <Link href="/dashboard" className="hidden sm:block">
-                  <Button className="px-6 py-2 bg-primary text-primary-foreground rounded-full font-semibold hover:shadow-[0_0_20px_rgba(124,92,255,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 mr-2">
+                  <Button className="px-5 py-2 h-9 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary/90 hover:shadow-[0_0_18px_rgba(124,92,255,0.45)] active:scale-95 transition-all duration-200 mr-1">
                     {lang === "ar" ? "لوحة التحكم" : "Dashboard"}
                   </Button>
                 </Link>
@@ -298,76 +301,90 @@ export default function HomePage() {
         </div>
       </nav>
 
-      <main className="pt-32">
+      <main className="pt-28">
 
         {/* ── 1. Hero ──────────────────────────────────────────── */}
-        <section className="relative max-w-7xl mx-auto px-6 mb-20 md:mb-32">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse" style={{ animationDuration: "15s" }} />
+        <section className="relative max-w-7xl mx-auto px-6 pt-8 pb-16 md:pb-24">
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
             {/* Hero text */}
             <div className={ta}>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-6 hover:bg-secondary/20 hover:scale-105 transition-all duration-300 cursor-default group">
-                <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-xs font-semibold mb-7 cursor-default">
+                <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
                 <span>{t.hero.badge}</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] mb-6 text-foreground tracking-tight" style={{ fontFamily: "var(--font-headline)" }}>
-                {t.hero.headline1} <br />
-                <span className="text-primary">{t.hero.headline2}</span>{" "}{t.hero.headline3}
+              <h1 className="text-5xl md:text-[4.25rem] font-extrabold leading-[1.08] mb-5 tracking-tight" style={{ fontFamily: "var(--font-headline)" }}>
+                <span className="text-foreground">{t.hero.headline1}</span><br />
+                <span className="text-gradient">{t.hero.headline2}</span><br />
+                <span className="text-foreground">{t.hero.headline3}</span>
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-10 max-w-2xl">
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-9 max-w-lg">
                 {t.hero.subtext}
               </p>
-              <div className={`flex flex-col sm:flex-row gap-4 ${isAr ? "justify-start flex-row-reverse" : "justify-start"}`}>
+              <div className={`flex flex-col sm:flex-row gap-3 ${isAr ? "justify-start flex-row-reverse" : "justify-start"}`}>
                 <button
                   onClick={() => document.getElementById("live-demo")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground rounded-full text-lg font-semibold hover:shadow-[0_0_30px_rgba(124,92,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 group"
+                  className="w-full sm:w-auto px-7 py-3.5 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary/90 hover:shadow-[0_8px_30px_-6px_rgba(124,92,255,0.55)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 group"
                 >
                   {t.hero.ctaPrimary}
-                  <PlayCircle className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                  <PlayCircle className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                 </button>
                 <button
                   onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-full sm:w-auto px-8 py-4 bg-card text-foreground border border-border rounded-full text-lg font-semibold hover:bg-muted hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                  className="w-full sm:w-auto px-7 py-3.5 bg-card text-foreground border border-border rounded-full text-sm font-semibold hover:bg-muted hover:border-border hover:-translate-y-0.5 transition-all duration-200 card-shadow"
                 >
                   {t.hero.ctaSecondary}
                 </button>
               </div>
             </div>
 
-            {/* ── DUMMY HERO CARD (decorative) ───────────────────── */}
-            <div className="relative group perspective-[1000px]">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-[2.5rem] blur-2xl opacity-50 group-hover:opacity-100 group-hover:duration-200 transition duration-1000" />
-              <div className="relative bg-card border border-border shadow-2xl rounded-[2rem] p-8 group-hover:scale-[1.02] transition-transform duration-500">
+            {/* ── HERO CARD (decorative live-preview) ─────────── */}
+            <div className="relative group">
+              {/* Outer glow */}
+              <div className="absolute -inset-2 bg-gradient-to-br from-secondary/20 via-primary/15 to-transparent rounded-[2rem] blur-2xl opacity-60 group-hover:opacity-90 transition-opacity duration-700" />
+              <div className="relative bg-card border border-border/70 card-shadow rounded-2xl p-6 group-hover:border-secondary/30 transition-all duration-500">
                 {/* Window chrome */}
-                <div className="flex items-center justify-between mb-4" dir="ltr">
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                <div className="flex items-center justify-between mb-5" dir="ltr">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-md group-hover:bg-primary/10 group-hover:text-primary transition-colors duration-300">{t.hero.cardLabel}</span>
+                  <span className="text-[11px] font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-md">{t.hero.cardLabel}</span>
                 </div>
-                {/* Dummy textarea */}
+                {/* Editable text */}
                 <textarea
                   value={text}
                   onChange={e => setText(e.target.value)}
-                  className="w-full h-32 bg-transparent text-foreground border-none resize-none focus:ring-0 text-xl md:text-2xl outline-none placeholder:text-muted-foreground"
+                  className="w-full h-28 bg-transparent text-foreground border-none resize-none focus:ring-0 text-lg md:text-xl outline-none placeholder:text-muted-foreground leading-relaxed"
                   dir="rtl"
                 />
-                {/* Static waveform bars */}
-                <div className="flex items-center gap-1 h-8 mt-6 mb-8 justify-center opacity-70 group-hover:opacity-100 transition-opacity duration-300" dir="ltr">
-                  {STATIC_HEIGHTS.slice(0, 24).map((h, i) => (
-                    <div key={i} className="w-1.5 bg-primary/40 group-hover:bg-primary/80 rounded-full animate-pulse transition-colors duration-300" style={{ height: `${h}%`, animationDelay: `${i * 0.05}s` }} />
+                {/* Vivid teal waveform bars */}
+                <div className="flex items-end gap-[3px] h-14 mt-4 mb-5 justify-center px-2" dir="ltr">
+                  {STATIC_HEIGHTS.map((h, i) => (
+                    <div
+                      key={i}
+                      className="rounded-full flex-shrink-0"
+                      style={{
+                        width: "4px",
+                        height: `${h}%`,
+                        background: `linear-gradient(to top, #20C7B7, ${i % 3 === 0 ? "#7C5CFF" : i % 3 === 1 ? "#4BBFFF" : "#20C7B7"})`,
+                        opacity: 0.85,
+                        animation: `wave-bar ${0.8 + (i % 5) * 0.15}s ease-in-out infinite`,
+                        animationDelay: `${i * 0.04}s`,
+                        transformOrigin: "bottom",
+                      }}
+                    />
                   ))}
                 </div>
-                {/* CTA scrolls to live section */}
+                {/* Try Now CTA */}
                 <button
                   onClick={() => document.getElementById("live-demo")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-full py-4 bg-secondary text-secondary-foreground rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(32,199,183,0.4)] hover:scale-[1.02] active:scale-95 transition-all duration-300 group/btn"
+                  className="w-full py-3 bg-secondary text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-secondary/90 hover:shadow-[0_6px_24px_-6px_rgba(32,199,183,0.55)] hover:scale-[1.02] active:scale-95 transition-all duration-200"
                 >
-                  <Volume2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform duration-300" />
+                  <Volume2 className="w-4 h-4" />
                   {t.hero.cardCta}
                 </button>
               </div>
@@ -378,32 +395,30 @@ export default function HomePage() {
         {/* ── LIVE TTS SECTION (fully functional) ─────────────── */}
         <section id="live-demo" className="max-w-4xl mx-auto px-6 mb-16 md:mb-24">
           {/* Heading */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 cursor-default">
-              <Volume2 className="w-4 h-4" />
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/15 text-primary text-xs font-semibold mb-4 cursor-default">
+              <Volume2 className="w-3.5 h-3.5" />
               <span>{lang === "ar" ? "جرّب الآن مجاناً" : "Try It Free — Right Now"}</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3" style={{ fontFamily: "var(--font-headline)" }}>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2.5" style={{ fontFamily: "var(--font-headline)" }}>
               {lang === "ar" ? "حوّل نصك إلى صوت في ثوانٍ" : "Convert Your Text to Voice in Seconds"}
             </h2>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-sm">
               {lang === "ar" ? "اختر صوتاً، الصق نصك، واستمع فوراً." : "Pick a voice, paste your text, and listen instantly."}
             </p>
           </div>
 
-          {/* Functional card */}
-          {/* Functional Voice Box */}
           <Suspense fallback={<div className="h-64 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
             <VoiceGenerator lang={lang} />
           </Suspense>
         </section>
 
         {/* ── 2. Trust Strip ─────────────────────────────────────── */}
-        <section className="border-y border-border bg-muted/20 py-8 mb-24 hover:bg-muted/40 transition-colors duration-500">
+        <section className="border-y border-border/60 bg-muted/30 py-7 mb-20">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="flex flex-wrap justify-between items-center gap-8 opacity-80">
+            <div className="flex flex-wrap justify-between items-center gap-6">
               {t.trust.map((item, i) => (
-                <div key={i} className={`group flex items-center gap-3 text-muted-foreground font-medium w-full md:w-auto justify-center md:justify-start ${trustHover[i]} hover:-translate-y-1 transition-all duration-300 cursor-default`}>
+                <div key={i} className={`group flex items-center gap-2.5 text-muted-foreground text-sm font-medium w-full md:w-auto justify-center md:justify-start ${trustHover[i]} transition-colors duration-200 cursor-default`}>
                   {trustIcons[i]}
                   <span>{item}</span>
                 </div>
@@ -413,38 +428,39 @@ export default function HomePage() {
         </section>
 
         {/* ── 3. Features ────────────────────────────────────────── */}
-        <section id="features" className="max-w-7xl mx-auto px-6 mb-32">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t.features.title}</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">{t.features.subtitle}</p>
+        <section id="features" className="max-w-7xl mx-auto px-6 mb-24">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{t.features.title}</h2>
+            <p className="text-muted-foreground text-sm max-w-md mx-auto">{t.features.subtitle}</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {t.features.items.map((f, i) => (
-              <div key={i} className={`group p-8 bg-card border border-border rounded-2xl ${featureColors[i].hoverCard} hover:-translate-y-2 transition-all duration-500 cursor-default`}>
-                <div className={`w-12 h-12 ${featureColors[i].bg} ${featureColors[i].text} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 ${featureColors[i].hoverIcon} transition-all duration-500`}>
+              <div key={i} className={`group p-7 bg-card border border-border/70 rounded-2xl card-shadow ${featureColors[i].hoverCard} hover:-translate-y-1 transition-all duration-300 cursor-default`}>
+                <div className={`w-10 h-10 ${featureColors[i].bg} ${featureColors[i].text} rounded-xl flex items-center justify-center mb-5 ${featureColors[i].hoverIcon} transition-all duration-300`}>
                   {featureIcons[i]}
                 </div>
-                <h3 className={`text-xl font-bold text-foreground mb-3 ${ta} ${featureColors[i].hoverH3} transition-colors duration-300`}>{f.title}</h3>
-                <p className={`text-muted-foreground ${ta}`}>{f.desc}</p>
+                <h3 className={`text-base font-bold text-foreground mb-2 ${ta} ${featureColors[i].hoverH3} transition-colors duration-200`}>{f.title}</h3>
+                <p className={`text-muted-foreground text-sm leading-relaxed ${ta}`}>{f.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* ── 4. How It Works ────────────────────────────────────── */}
-        <section id="how-it-works" className="max-w-7xl mx-auto px-6 mb-32">
-          <div className="group/wrapper bg-card border border-border rounded-3xl p-10 md:p-16 hover:border-primary/30 hover:shadow-2xl transition-all duration-700">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t.howItWorks.title}</h2>
-              <p className="text-muted-foreground text-lg">{t.howItWorks.subtitle}</p>
+        <section id="how-it-works" className="max-w-7xl mx-auto px-6 mb-24">
+          <div className="bg-card border border-border/70 rounded-2xl p-8 md:p-12 card-shadow">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{t.howItWorks.title}</h2>
+              <p className="text-muted-foreground text-sm">{t.howItWorks.subtitle}</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-              <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-[2px] bg-border -z-10 group-hover/wrapper:bg-primary/20 transition-colors duration-700" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative">
+              {/* connector line */}
+              <div className="hidden md:block absolute top-[2.75rem] left-[calc(16.67%+2rem)] right-[calc(16.67%+2rem)] h-px bg-border" />
               {t.howItWorks.steps.map((step, i) => (
-                <div key={i} className="group flex flex-col items-center text-center cursor-default">
-                  <div className={`w-24 h-24 ${stepStyles[i].num} rounded-2xl flex items-center justify-center mb-6 text-2xl font-bold group-hover:scale-110 transition-all duration-500`}>0{i + 1}</div>
-                  <h3 className={`text-xl font-bold text-foreground mb-3 ${stepStyles[i].hTitle} transition-colors duration-300`}>{step.label}</h3>
-                  <p className="text-muted-foreground group-hover:text-foreground transition-colors duration-300">{step.desc}</p>
+                <div key={i} className="flex flex-col items-center text-center">
+                  <div className={`w-11 h-11 ${stepStyles[i].num} rounded-full flex items-center justify-center mb-5 text-sm font-bold shrink-0 z-10`}>0{i + 1}</div>
+                  <h3 className={`text-base font-bold text-foreground mb-2 ${stepStyles[i].hTitle}`}>{step.label}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
                 </div>
               ))}
             </div>
@@ -452,14 +468,14 @@ export default function HomePage() {
         </section>
 
         {/* ── 5. Voices ──────────────────────────────────────────── */}
-        <section id="demo" className="max-w-7xl mx-auto px-6 mb-32">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 hover:bg-primary/20 hover:scale-105 transition-all duration-300 cursor-default group">
-              <Headphones className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+        <section id="demo" className="max-w-7xl mx-auto px-6 mb-24">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/15 text-primary text-xs font-semibold mb-4 cursor-default">
+              <Headphones className="w-3.5 h-3.5" />
               <span>{t.voices.badge}</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t.voices.title}</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">{t.voices.subtitle}</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2.5">{t.voices.title}</h2>
+            <p className="text-muted-foreground text-sm max-w-md mx-auto">{t.voices.subtitle}</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -542,45 +558,45 @@ export default function HomePage() {
         </section>
 
         {/* ── 6. Use Cases ───────────────────────────────────────── */}
-        <section className="max-w-7xl mx-auto px-6 mb-32">
-          <div className="bg-muted/10 hover:bg-muted/30 transition-colors duration-700 rounded-3xl p-10 py-16 border border-border text-center">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-10">{t.useCases.title}</h2>
-            <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+        <section className="max-w-7xl mx-auto px-6 mb-24">
+          <div className="bg-muted/30 rounded-2xl p-8 py-12 border border-border/60 text-center card-shadow">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">{t.useCases.title}</h2>
+            <div className="flex flex-wrap justify-center gap-3">
               {t.useCases.chips.map((chip, i) => (
-                <div key={i} className={`px-6 py-3 bg-card border border-border rounded-xl font-medium text-foreground text-lg shadow-sm ${chipColors[i]} hover:-translate-y-1 transition-all duration-300 cursor-default`}>{chip}</div>
+                <div key={i} className={`px-5 py-2.5 bg-card border border-border rounded-xl text-sm font-medium text-foreground card-shadow ${chipColors[i]} hover:-translate-y-0.5 transition-all duration-200 cursor-default`}>{chip}</div>
               ))}
             </div>
           </div>
         </section>
 
         {/* ── 7. Pricing ─────────────────────────────────────────── */}
-        <section id="pricing" className="max-w-5xl mx-auto px-6 mb-32">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t.pricing.title}</h2>
-            <p className="text-muted-foreground text-lg">{t.pricing.subtitle}</p>
+        <section id="pricing" className="max-w-5xl mx-auto px-6 mb-24">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2.5">{t.pricing.title}</h2>
+            <p className="text-muted-foreground text-sm">{t.pricing.subtitle}</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {t.pricing.plans.map((plan: any, i: number) => {
               const isPop = plan.popular;
               return (
-                <div key={i} className={`group bg-card ${isPop ? "border-2 border-primary shadow-lg" : "border border-border"} rounded-3xl p-8 flex flex-col relative hover:scale-[1.03] transition-all duration-500 z-10 ${isPop ? "hover:shadow-[0_20px_60px_-15px_rgba(124,92,255,0.4)]" : "hover:border-secondary/50 hover:shadow-[0_15px_50px_-15px_rgba(32,199,183,0.2)]"}`}>
+                <div key={i} className={`group bg-card ${isPop ? "border-2 border-primary" : "border border-border/70"} rounded-2xl p-6 flex flex-col relative card-shadow ${isPop ? "hover:shadow-[0_16px_48px_-10px_rgba(124,92,255,0.35)]" : "hover:border-border hover:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.12)]"} hover:-translate-y-1 transition-all duration-300`}>
                   {plan.badge && (
-                    <div className={`absolute top-0 ${isAr ? "right-6" : "left-6"} -translate-y-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-bold tracking-wide group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(124,92,255,0.5)] transition-all duration-300`}>{plan.badge}</div>
+                    <div className={`absolute top-0 ${isAr ? "right-5" : "left-5"} -translate-y-1/2 ${isPop ? "bg-primary" : "bg-secondary"} text-white px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wide`}>{plan.badge}</div>
                   )}
-                  <h3 className={`text-xl font-bold text-foreground mb-2 ${isPop ? "group-hover:text-primary" : "group-hover:text-secondary"} transition-colors duration-300 ${ta}`}>{plan.name}</h3>
-                  <div className={`flex items-baseline gap-1 mb-8 ${isAr ? "flex-row-reverse justify-end" : ""}`}>
-                    <span className={`text-3xl font-bold text-foreground ${isPop ? "group-hover:text-primary" : "group-hover:text-secondary"} transition-colors duration-300`}>{plan.price}</span>
-                    <span className="text-muted-foreground font-medium text-sm">{plan.period}</span>
+                  <h3 className={`text-base font-bold text-foreground mb-1.5 ${ta}`}>{plan.name}</h3>
+                  <div className={`flex items-baseline gap-1 mb-6 ${isAr ? "flex-row-reverse justify-end" : ""}`}>
+                    <span className={`text-2xl font-extrabold ${isPop ? "text-primary" : "text-foreground"}`}>{plan.price}</span>
+                    <span className="text-muted-foreground text-xs">{plan.period}</span>
                   </div>
-                  <ul className="space-y-4 mb-10 flex-1">
+                  <ul className="space-y-3 mb-7 flex-1">
                     {plan.features.map((f: string, j: number) => (
-                      <li key={j} className={`flex items-center gap-3 ${j === 0 && isPop ? "text-foreground font-medium" : "text-muted-foreground"} text-sm`}>
-                        <Check className={`w-4 h-4 ${isPop ? "text-primary" : "text-secondary"} flex-shrink-0 group-hover:scale-125 transition-transform duration-300`} />
-                        <span className={j !== 0 || !isPop ? "group-hover:text-foreground transition-colors duration-300" : ""}>{f}</span>
+                      <li key={j} className="flex items-start gap-2.5 text-xs text-muted-foreground">
+                        <Check className={`w-3.5 h-3.5 mt-0.5 ${isPop ? "text-primary" : "text-secondary"} flex-shrink-0`} />
+                        <span>{f}</span>
                       </li>
                     ))}
                   </ul>
-                  <button onClick={handleActionClick} className={`w-full py-3 ${isPop ? "bg-primary text-primary-foreground hover:shadow-[0_0_25px_rgba(124,92,255,0.5)]" : "bg-muted text-foreground border border-border hover:bg-secondary hover:text-secondary-foreground hover:border-secondary hover:shadow-[0_0_20px_rgba(32,199,183,0.3)]"} rounded-xl font-bold hover:scale-105 active:scale-95 transition-all duration-300 text-sm`}>{plan.cta}</button>
+                  <button onClick={handleActionClick} className={`w-full py-2.5 text-sm ${isPop ? "bg-primary text-white hover:bg-primary/90" : "bg-muted text-foreground border border-border hover:bg-muted/80"} rounded-xl font-semibold active:scale-95 transition-all duration-200`}>{plan.cta}</button>
                 </div>
               );
             })}
@@ -588,44 +604,40 @@ export default function HomePage() {
         </section>
 
         {/* ── 8. Final CTA ───────────────────────────────────────── */}
-        <section className="max-w-5xl mx-auto px-6 mb-20">
-          <div className="group bg-card border border-border rounded-[3rem] p-16 text-center relative overflow-hidden shadow-xl hover:shadow-[0_20px_80px_-20px_rgba(124,92,255,0.3)] hover:border-primary/40 transition-all duration-700">
-            <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors duration-700" />
+        <section className="max-w-5xl mx-auto px-6 mb-16">
+          <div className="cta-gradient rounded-2xl p-12 md:p-16 text-center relative overflow-hidden">
+            {/* subtle noise / shine overlay */}
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.4)_0%,_transparent_70%)]" />
             <div className="relative z-10 flex flex-col items-center">
-              <Sparkles className="w-10 h-10 text-primary mb-6 group-hover:scale-125 group-hover:rotate-12 transition-transform duration-500" />
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground tracking-tight group-hover:-translate-y-1 transition-transform duration-500" style={{ fontFamily: "var(--font-headline)" }}>{t.cta.title}</h2>
-              <p className="text-xl mb-10 text-muted-foreground max-w-2xl mx-auto group-hover:text-foreground/80 transition-colors duration-500">{t.cta.subtitle}</p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onClick={handleActionClick} className="px-10 py-4 bg-primary text-primary-foreground rounded-full text-lg font-bold hover:shadow-[0_0_30px_rgba(124,92,255,0.6)] hover:scale-110 active:scale-95 transition-all duration-300">{t.cta.primary}</button>
-                <button onClick={handleActionClick} className="px-10 py-4 bg-background border border-border text-foreground rounded-full text-lg font-bold hover:bg-muted hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 hover:scale-105 active:scale-95 transition-all duration-300">{t.cta.secondary}</button>
+              <div className="w-11 h-11 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-white tracking-tight" style={{ fontFamily: "var(--font-headline)" }}>{t.cta.title}</h2>
+              <p className="text-base mb-8 text-white/75 max-w-xl mx-auto">{t.cta.subtitle}</p>
+              <button onClick={handleActionClick} className="px-8 py-3 bg-white text-primary rounded-full text-sm font-bold hover:bg-white/90 hover:shadow-[0_8px_30px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-200">{t.cta.primary}</button>
             </div>
           </div>
         </section>
       </main>
 
       {/* ── Footer ─────────────────────────────────────────────── */}
-      <footer className="w-full py-12 border-t border-border bg-background">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex flex-col items-center md:items-start gap-4">
-            <div className="flex items-center gap-2 group cursor-pointer">
-              <Sparkles className="w-5 h-5 text-primary group-hover:rotate-12 group-hover:scale-125 transition-transform duration-300" />
-              <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors duration-300">صوتي</span>
+      <footer className="w-full py-8 border-t border-border/60 bg-background">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
+              <Sparkles className="w-3 h-3 text-white" />
             </div>
-            <div className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 cursor-default">
-              {t.footer.copyright}
-            </div>
+            <span className="font-bold text-sm text-foreground">صوتي</span>
+            <span className="text-muted-foreground text-xs mx-2">·</span>
+            <span className="text-muted-foreground text-xs">{t.footer.copyright}</span>
           </div>
           
-          <div className="flex flex-col items-center md:items-end gap-6">
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-              <a href="#"        className="hover:text-primary hover:-translate-y-1 transition-all duration-300">{t.footer.product}</a>
-              <a href="#pricing" className="hover:text-primary hover:-translate-y-1 transition-all duration-300">{t.footer.pricing}</a>
-              <a href="#"        className="hover:text-primary hover:-translate-y-1 transition-all duration-300">{t.footer.privacy}</a>
-              <a href="#"        className="hover:text-primary hover:-translate-y-1 transition-all duration-300">{t.footer.terms}</a>
-              <a href="#"        className="hover:text-primary hover:-translate-y-1 transition-all duration-300">{t.footer.contact}</a>
-            </div>
-            
+          <div className="flex flex-wrap items-center justify-center gap-5 text-xs text-muted-foreground">
+            <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.product}</a>
+            <a href="#pricing" className="hover:text-primary transition-colors duration-200">{t.footer.pricing}</a>
+            <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.privacy}</a>
+            <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.terms}</a>
+            <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.contact}</a>
           </div>
         </div>
       </footer>

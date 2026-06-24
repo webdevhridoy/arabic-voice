@@ -212,7 +212,7 @@ export function UpgradeModal({ open, onClose, usedChars = 0, limitChars = 0, lan
         {/* Footer note */}
         <div className="px-8 pb-8 pt-2 text-center">
           <p className="text-[11px] text-gray-600">
-            {isAr ? "الخطط تُجدَّد شهرياً · إلغاء في أي وقت · دفع آمن عبر Stripe" : "Plans renew monthly · Cancel anytime · Secure checkout via Stripe"}
+            {isAr ? "دفع آمن لمرة واحدة عبر Lemon Squeezy" : "One-time secure checkout via Lemon Squeezy"}
           </p>
         </div>
       </div>

@@ -200,25 +200,75 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
         }
       } else {
         if (!text.trim() && activeTab === "text") return setIsSubmitting(false);
-        const res = await fetch("/api/tts", {
+
+        // ── Streaming TTS: audio plays within ~1-2 seconds ──────────────
+        const res = await fetch("/api/tts/stream", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, voiceId, dialect })
+          body: JSON.stringify({ text, voiceId, dialect }),
         });
-        if (res.ok) {
-          setText("");
-          await mutateGenerations();
-          await mutateUsage();
-          showSuccessToast(lang === "ar" ? "تم توليد الصوت بنجاح!" : "Audio generated successfully!");
+
+        if (res.ok && res.body) {
+          // Collect the whole stream into a Blob, then create an object URL.
+          // This allows the <audio> element to seek and the browser handles
+          // decoding of the mp3 stream natively.
+          const reader = res.body.getReader();
+          const chunks: Uint8Array<ArrayBuffer>[] = [];
+
+          // Start consuming the stream
+          const pump = async () => {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              if (value) chunks.push(value as Uint8Array<ArrayBuffer>);
+
+              // After first chunk arrives (~1-2s), immediately start playing
+              if (chunks.length === 1) {
+                const partialBlob = new Blob(chunks, { type: "audio/mpeg" });
+                const partialUrl  = URL.createObjectURL(partialBlob);
+                if (audioElement) audioElement.pause();
+                const el = new Audio(partialUrl);
+                el.playbackRate = playbackRate;
+                el.play().catch(() => {});
+                setAudioElement(el);
+                setPlayingId("stream-preview");
+                // Show success early so UI feels instant
+                showSuccessToast(isAr ? "تم توليد الصوت بنجاح!" : "Audio generated successfully!");
+                setText("");
+              }
+            }
+
+            // Once fully downloaded, swap to the complete blob for seekability
+            const fullBlob = new Blob(chunks, { type: "audio/mpeg" });
+            const fullUrl  = URL.createObjectURL(fullBlob);
+            if (audioElement) audioElement.pause();
+            const el = new Audio(fullUrl);
+            el.playbackRate = playbackRate;
+            el.play().catch(() => {});
+            el.onended = () => setPlayingId(null);
+            setAudioElement(el);
+            setPlayingId("stream-final");
+
+            // Refresh generations list & usage in background
+            mutateGenerations();
+            mutateUsage();
+          };
+
+          pump().catch((err) => {
+            console.error("Stream pump error:", err);
+          });
+
         } else {
-          const error = await res.json();
-          if (res.status === 429 || error.error?.toLowerCase().includes("limit")) {
+          let error: { error?: string } = {};
+          try { error = await res.json(); } catch { /* non-JSON error */ }
+          if (res.status === 403 || res.status === 429 || error.error?.toLowerCase().includes("limit")) {
             setShowUpgrade(true);
           } else {
             alert(error.error || "Generation failed");
           }
         }
       }
+
     } finally {
       setIsSubmitting(false);
     }

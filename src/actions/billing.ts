@@ -13,24 +13,23 @@ export async function getBillingData() {
   const [subscription, invoices, usageRecords, usage] = await Promise.all([
     prisma.subscription.findUnique({ where: { userId } }),
 
-    // Invoices = all paid Stripe events for this user (via userId in metadata)
-    // Since StripeEvent has no userId FK, we use the session IDs we stored on Subscription
-    prisma.stripeEvent.findMany({
-      where: { type: "checkout.session.completed" },
+    // Invoices = all paid payment events (order_created)
+    prisma.paymentEvent.findMany({
+      where:   { type: "order_created" },
       orderBy: { createdAt: "desc" },
-      take: 20,
+      take:    20,
     }),
 
     prisma.usageRecord.findMany({
-      where: { userId },
+      where:   { userId },
       orderBy: { createdAt: "desc" },
-      take: 20,
+      take:    20,
     }),
 
     checkUsageLimit(userId, 0),
   ]);
 
-  const planId = (subscription?.plan ?? "free") as keyof typeof PLANS | "free";
+  const planId  = (subscription?.plan ?? "free") as keyof typeof PLANS | "free";
   const planDef = planId !== "free" ? PLANS[planId as keyof typeof PLANS] : null;
 
   return {

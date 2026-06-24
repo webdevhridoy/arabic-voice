@@ -23,8 +23,8 @@ model Subscription {
   id                   String   @id @default(cuid())
   userId               String   @unique
   user                 User     @relation(fields: [userId], references: [id])
-  stripeCustomerId     String?  @unique
-  stripeSubscriptionId String?  @unique
+  lsCustomerId         String?  @unique
+  lsOrderId            String?  @unique
   plan                 String   @default("free")
   status               String   @default("active")
   currentPeriodEnd     DateTime?
@@ -73,7 +73,7 @@ model Plan {
   active         Boolean  @default(true)
 }
 
-model StripeEvent {
+model PaymentEvent {
   id         String   @id
   type       String
   status     String   @default("processed")

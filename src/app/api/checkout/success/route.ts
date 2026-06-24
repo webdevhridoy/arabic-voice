@@ -1,50 +1,62 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getOrder } from "@/lib/lemonsqueezy";
 import { prisma } from "@/lib/prisma";
 import { PLANS, type PlanId } from "../route";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const sessionId = req.nextUrl.searchParams.get("session_id");
+  // Lemon Squeezy redirects back with ?order_id=xxx
+  const orderId = req.nextUrl.searchParams.get("order_id");
 
-  if (!sessionId) {
-    return NextResponse.redirect(new URL("/dashboard?error=missing_session", req.url));
+  if (!orderId) {
+    return NextResponse.redirect(
+      new URL("/dashboard?error=missing_order", req.url)
+    );
   }
 
   try {
-    // Retrieve + verify the session from Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    // Retrieve + verify the order from Lemon Squeezy
+    const { data: orderData, error } = await getOrder(orderId);
 
-    if (session.payment_status !== "paid") {
-      return NextResponse.redirect(new URL("/dashboard?error=not_paid", req.url));
+    if (error || !orderData) {
+      console.error("LS order fetch error:", error);
+      return NextResponse.redirect(
+        new URL("/dashboard?error=order_not_found", req.url)
+      );
     }
 
-    const userId = session.metadata?.userId;
-    const planId = session.metadata?.planId as PlanId;
-    const chars  = parseInt(session.metadata?.chars || "0", 10);
+    const order = orderData.data;
+    const attrs = order.attributes;
+
+    // Verify the order was actually paid
+    if (attrs.status !== "paid") {
+      return NextResponse.redirect(
+        new URL("/dashboard?error=not_paid", req.url)
+      );
+    }
+
+    // Extract our custom data that we passed at checkout creation
+    const firstItem   = (attrs.first_order_item as any) ?? null;
+    const customData  = (firstItem?.custom_data
+      ?? (attrs as any).custom_data
+      ?? {}) as Record<string, string>;
+
+    const userId  = customData?.userId  as string | undefined;
+    const planId  = customData?.planId  as PlanId | undefined;
+    const chars   = parseInt(customData?.chars || "0", 10);
 
     if (!userId || !planId || !chars) {
-      return NextResponse.redirect(new URL("/dashboard?error=bad_metadata", req.url));
+      // Fallback: still a paid order — log and redirect gracefully
+      console.error("Missing custom_data on LS order", orderId);
+      return NextResponse.redirect(
+        new URL("/dashboard?error=bad_metadata", req.url)
+      );
     }
 
-    const plan = PLANS[planId];
-
-    // Fetch receipt URL from Stripe PaymentIntent → latest_charge
-    let receiptUrl: string | null = null;
-    if (session.payment_intent) {
-      try {
-        const pi = await stripe.paymentIntents.retrieve(
-          session.payment_intent as string,
-          { expand: ["latest_charge"] }
-        );
-        receiptUrl = (pi as any).latest_charge?.receipt_url ?? null;
-      } catch {
-        // Non-fatal: receipt URL best-effort only
-      }
-    }
-
-    const now = new Date();
+    const plan       = PLANS[planId];
+    const receiptUrl = attrs.urls?.receipt ?? null;
+    const now        = new Date();
 
     // 1. Ensure User record exists (idempotent)
     await prisma.user.upsert({
@@ -66,35 +78,34 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // 3. Update (or create) Subscription — store receiptUrl + paidAt
+    // 3. Upsert Subscription with Lemon Squeezy order details
     await prisma.subscription.upsert({
       where:  { userId },
       create: {
         userId,
-        stripeCustomerId:     session.customer as string ?? null,
-        stripeSubscriptionId: sessionId,
-        plan:                 planId,
-        status:               "active",
-        currentPeriodEnd:     null,
+        lsCustomerId: String(attrs.customer_id ?? ""),
+        lsOrderId:    String(order.id),
+        plan:         planId,
+        status:       "active",
         receiptUrl,
-        paidAt: now,
+        paidAt:       now,
       },
       update: {
-        plan:                 planId,
-        status:               "active",
-        stripeCustomerId:     session.customer as string ?? undefined,
-        stripeSubscriptionId: sessionId,
+        plan:         planId,
+        status:       "active",
+        lsCustomerId: String(attrs.customer_id ?? ""),
+        lsOrderId:    String(order.id),
         receiptUrl,
-        paidAt: now,
+        paidAt:       now,
       },
     });
 
-    // 4. Idempotency — store Stripe event with full invoice metadata
-    await prisma.stripeEvent.upsert({
-      where:  { id: sessionId },
+    // 4. Idempotency — store payment event
+    await prisma.paymentEvent.upsert({
+      where:  { id: String(order.id) },
       create: {
-        id:         sessionId,
-        type:       "checkout.session.completed",
+        id:         String(order.id),
+        type:       "order_created",
         planId,
         amount:     plan.amount / 100,
         receiptUrl,

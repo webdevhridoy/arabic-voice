@@ -17,6 +17,19 @@ const cairo = Cairo({
 export const metadata: Metadata = {
   title: "Sawti | صوتي - Premium Arabic Text to Speech",
   description: "Turn Arabic text into natural audio in seconds with Sawti. The best TTS SaaS for Arabic voices.",
+  icons: {
+    icon: [
+      { url: "/icon-16.png",  sizes: "16x16",  type: "image/png" },
+      { url: "/icon-32.png",  sizes: "32x32",  type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/icon-32.png",
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({

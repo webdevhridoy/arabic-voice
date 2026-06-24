@@ -72,21 +72,25 @@ We use a Redis queue (via BullMQ) to safely manage text-to-speech requests in th
 
 ---
 
-## 6. Payments & Subscriptions (Stripe) - *Optional*
-Required if you want to charge users for credits/subscriptions.
-* **`STRIPE_SECRET_KEY`**
-* **`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`**
-* **`STRIPE_WEBHOOK_SECRET`**
+## 6. Payments & Credits (Lemon Squeezy) - *Optional*
+Required if you want to charge users for credits/packages.
+* **`LEMONSQUEEZY_API_KEY`**
+* **`LEMONSQUEEZY_STORE_ID`**
+* **`LEMONSQUEEZY_WEBHOOK_SECRET`**
+* **`LEMONSQUEEZY_VARIANT_STARTER`**
+* **`LEMONSQUEEZY_VARIANT_PRO`**
+* **`LEMONSQUEEZY_VARIANT_POWER`**
 
 ### How to get them:
-1. Log in to your [Stripe Dashboard](https://dashboard.stripe.com).
-2. Under **Developers** -> **API Keys**:
-   - Copy the **Publishable key** (`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`).
-   - Copy the **Secret key** (`STRIPE_SECRET_KEY`).
-3. Under **Developers** -> **Webhooks**:
-   - Add an endpoint pointing to `https://your-production-domain.com/api/webhooks/stripe`.
-   - Select the events to listen to (e.g. `checkout.session.completed`, `customer.subscription.updated`, etc.).
-   - Copy the **Signing secret** (this is `STRIPE_WEBHOOK_SECRET`).
+1. Log in to your [Lemon Squeezy Dashboard](https://app.lemonsqueezy.com).
+2. Go to **Settings** -> **API** to generate your `LEMONSQUEEZY_API_KEY`.
+3. Locate your Store ID in settings or the dashboard URL/sidebar (this is `LEMONSQUEEZY_STORE_ID`).
+4. Go to **Store** -> **Products** and create your products (Starter, Pro, Power).
+5. Copy the Variant ID for each variant (these are `LEMONSQUEEZY_VARIANT_STARTER`, `LEMONSQUEEZY_VARIANT_PRO`, and `LEMONSQUEEZY_VARIANT_POWER`).
+6. Go to **Settings** -> **Webhooks**:
+   - Add a webhook endpoint pointing to `https://your-production-domain.com/api/webhooks/lemonsqueezy`.
+   - Select the events to listen to (e.g. `order_created`, `subscription_created`, etc.).
+   - Set a signing secret (this is `LEMONSQUEEZY_WEBHOOK_SECRET`).
 
 ---
 

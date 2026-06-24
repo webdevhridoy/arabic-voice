@@ -2,8 +2,12 @@ import { z } from "zod";
 
 const serverSchema = z.object({
   DATABASE_URL: z.string().optional().default("file:./prisma/dev.db"),
-  STRIPE_SECRET_KEY: z.string().optional(),
-  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  LEMONSQUEEZY_API_KEY:          z.string().optional(),
+  LEMONSQUEEZY_STORE_ID:         z.string().optional(),
+  LEMONSQUEEZY_WEBHOOK_SECRET:   z.string().optional(),
+  LEMONSQUEEZY_VARIANT_STARTER:  z.string().optional(),
+  LEMONSQUEEZY_VARIANT_PRO:      z.string().optional(),
+  LEMONSQUEEZY_VARIANT_POWER:    z.string().optional(),
   // Optional in dev — app will still run but TTS will fail at generation time
   ELEVENLABS_API_KEY: z.string().optional().default(""),
   GROQ_API_KEY: z.string().optional(),
@@ -19,7 +23,7 @@ const serverSchema = z.object({
 
 const clientSchema = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().optional(),
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+  NEXT_PUBLIC_BASE_URL: z.string().optional(),
 });
 
 /**
@@ -38,7 +42,7 @@ export function validateEnv() {
   const parsedServer = serverSchema.safeParse(process.env);
   const parsedClient = clientSchema.safeParse({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
   });
 
   if (!parsedServer.success || !parsedClient.success) {
