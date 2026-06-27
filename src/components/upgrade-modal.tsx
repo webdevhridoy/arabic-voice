@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Zap, Crown, Sparkles, Loader2 } from "lucide-react";
 
 interface UpgradeModalProps {
@@ -58,6 +58,24 @@ const PLANS = [
 
 export function UpgradeModal({ open, onClose, usedChars = 0, limitChars = 0, lang = "ar" }: UpgradeModalProps) {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  // Reset loading state if browser goes back/forward (restored from cache)
+  useEffect(() => {
+    const handlePageShow = () => {
+      setLoadingPlan(null);
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, []);
+
+  // Reset loading state on open state change
+  useEffect(() => {
+    if (!open) {
+      setLoadingPlan(null);
+    }
+  }, [open]);
 
   if (!open) return null;
 
