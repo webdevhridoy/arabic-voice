@@ -150,6 +150,14 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
     }
   }, [upgraded]);
 
+  // Auto-open UpgradeModal if upgrade=true query param is present
+  useEffect(() => {
+    const upgradeParam = searchParams.get("upgrade") === "true";
+    if (upgradeParam) {
+      setShowUpgrade(true);
+    }
+  }, [searchParams]);
+
   const handleGenerateText = async () => {
     // Check limit before hitting API
     if (usage && !usage.allowed) {
@@ -209,9 +217,11 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
         });
 
         if (res.ok && res.body) {
-          // Collect the whole stream into a Blob, then create an object URL.
-          // This allows the <audio> element to seek and the browser handles
-          // decoding of the mp3 stream natively.
+          const generationId = res.headers.get("X-Generation-Id");
+          
+          // Instantly show the new generation in "processing" state in the history list
+          mutateGenerations();
+
           const reader = res.body.getReader();
           const chunks: Uint8Array<ArrayBuffer>[] = [];
 
@@ -221,33 +231,31 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
               const { done, value } = await reader.read();
               if (done) break;
               if (value) chunks.push(value as Uint8Array<ArrayBuffer>);
-
-              // After first chunk arrives (~1-2s), immediately start playing
-              if (chunks.length === 1) {
-                const partialBlob = new Blob(chunks, { type: "audio/mpeg" });
-                const partialUrl  = URL.createObjectURL(partialBlob);
-                if (audioElement) audioElement.pause();
-                const el = new Audio(partialUrl);
-                el.playbackRate = playbackRate;
-                el.play().catch(() => {});
-                setAudioElement(el);
-                setPlayingId("stream-preview");
-                // Show success early so UI feels instant
-                showSuccessToast(isAr ? "تم توليد الصوت بنجاح!" : "Audio generated successfully!");
-                setText("");
-              }
             }
 
-            // Once fully downloaded, swap to the complete blob for seekability
+            // Once fully downloaded, construct the final Blob and play it once
             const fullBlob = new Blob(chunks, { type: "audio/mpeg" });
             const fullUrl  = URL.createObjectURL(fullBlob);
-            if (audioElement) audioElement.pause();
+
+            if (audioElement) {
+              audioElement.pause();
+            }
+
             const el = new Audio(fullUrl);
             el.playbackRate = playbackRate;
             el.play().catch(() => {});
             el.onended = () => setPlayingId(null);
+            
             setAudioElement(el);
-            setPlayingId("stream-final");
+            if (generationId) {
+              setPlayingId(generationId);
+            } else {
+              setPlayingId("stream-final");
+            }
+
+            // Clear input box and show success
+            setText("");
+            showSuccessToast(isAr ? "تم توليد الصوت بنجاح!" : "Audio generated successfully!");
 
             // Refresh generations list & usage in background
             mutateGenerations();

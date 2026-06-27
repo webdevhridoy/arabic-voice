@@ -89,65 +89,114 @@ export async function POST(req: NextRequest) {
     const startTime = Date.now();
 
     // ── Stream from ElevenLabs ─────────────────────────────────────────────
-    const elResponse = await streamElevenLabsAudio(normalizedText, voiceId);
-
-    if (!elResponse.body) {
-      throw new Error("No stream body from ElevenLabs");
+    let elResponse: Response;
+    try {
+      elResponse = await streamElevenLabsAudio(normalizedText, voiceId);
+    } catch (err: any) {
+      await prisma.audioGeneration.update({
+        where: { id: generation.id },
+        data: {
+          status: "failed",
+          errorMessage: err.message || "ElevenLabs connection failed",
+          generationTimeMs: Date.now() - startTime
+        }
+      }).catch(() => {});
+      throw err;
     }
 
-    // Collect chunks to save in DB after stream ends, without blocking playback
-    const chunks: Uint8Array[] = [];
-    const [streamForClient, streamForDB] = elResponse.body.tee();
-
-    // Background: consume the second stream, save record, charge usage
-    (async () => {
-      try {
-        const reader = streamForDB.getReader();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          if (value) chunks.push(value);
+    if (!elResponse.body) {
+      const err = new Error("No stream body from ElevenLabs");
+      await prisma.audioGeneration.update({
+        where: { id: generation.id },
+        data: {
+          status: "failed",
+          errorMessage: err.message,
+          generationTimeMs: Date.now() - startTime
         }
+      }).catch(() => {});
+      throw err;
+    }
 
-        const totalBytes = chunks.reduce((n, c) => n + c.byteLength, 0);
-        const durationSeconds = charactersCount / 12;
+    const reader = elResponse.body.getReader();
+    const chunks: Uint8Array[] = [];
 
-        await prisma.$transaction([
-          prisma.audioGeneration.update({
+    // Custom ReadableStream that intercepts chunks and completes DB transaction
+    // before closing the stream so Vercel keeps the serverless function alive.
+    const customClientStream = new ReadableStream({
+      async pull(controller) {
+        try {
+          const { done, value } = await reader.read();
+          if (done) {
+            // Stream complete! Process the gathered chunks and save to DB
+            try {
+              const audioBuffer = Buffer.concat(chunks);
+              const base64Audio = `data:audio/mpeg;base64,${audioBuffer.toString("base64")}`;
+              const durationSeconds = charactersCount / 12;
+
+              await prisma.$transaction([
+                prisma.audioGeneration.update({
+                  where: { id: generation.id },
+                  data: {
+                    status: "completed",
+                    audioUrl: base64Audio,
+                    durationSeconds,
+                    generationTimeMs: Date.now() - startTime,
+                    mimeType: "audio/mpeg",
+                    fileSizeBytes: audioBuffer.byteLength,
+                  },
+                }),
+                prisma.usageRecord.create({
+                  data: { userId: userId!, charactersUsed: charactersCount, provider: "elevenlabs" },
+                }),
+              ]);
+            } catch (dbErr) {
+              console.error("Failed to save audio stream to database:", dbErr);
+            }
+
+            controller.close();
+            return;
+          }
+
+          if (value) {
+            chunks.push(value);
+            controller.enqueue(value);
+          }
+        } catch (err: any) {
+          console.error("Stream reader pull error:", err);
+          await prisma.audioGeneration.update({
             where: { id: generation.id },
             data: {
-              status: "completed",
-              audioUrl: null, // streaming — not stored in DB
-              durationSeconds,
-              generationTimeMs: Date.now() - startTime,
-              mimeType: "audio/mpeg",
-              fileSizeBytes: totalBytes,
-            },
-          }),
-          prisma.usageRecord.create({
-            data: { userId: userId!, charactersUsed: charactersCount, provider: "elevenlabs" },
-          }),
-        ]);
-      } catch (err) {
-        console.error("Stream DB post-processing error:", err);
-        await prisma.audioGeneration
-          .update({
-            where: { id: generation.id },
-            data: { status: "failed", errorMessage: String(err) },
-          })
-          .catch(() => {});
+              status: "failed",
+              errorMessage: err.message || String(err),
+              generationTimeMs: Date.now() - startTime
+            }
+          }).catch(() => {});
+          controller.error(err);
+        }
+      },
+      async cancel(reason) {
+        console.warn(`Stream cancelled by client: ${reason}`);
+        reader.releaseLock();
+        await elResponse.body?.cancel().catch(() => {});
+
+        await prisma.audioGeneration.update({
+          where: { id: generation.id },
+          data: {
+            status: "failed",
+            errorMessage: `Stream cancelled by client: ${reason}`,
+            generationTimeMs: Date.now() - startTime
+          }
+        }).catch(() => {});
       }
-    })();
+    });
 
     // ── Return the stream immediately ──────────────────────────────────────
-    return new Response(streamForClient, {
+    return new Response(customClientStream, {
       status: 200,
       headers: {
         "Content-Type": "audio/mpeg",
         "Cache-Control": "no-store",
-        // Tell the client which generation ID to reference
         "X-Generation-Id": generation.id,
-        // Transfer-Encoding is set automatically by Next.js for streams
       },
     });
   } catch (err: any) {

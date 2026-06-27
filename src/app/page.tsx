@@ -122,9 +122,13 @@ export default function HomePage() {
     setText(translations[next].demoText);
   };
 
-  const handleActionClick = () => {
+  const handleActionClick = (planId?: string) => {
     if (typeof window !== "undefined") localStorage.setItem("pending_tts_text", text);
-    router.push("/dashboard");
+    if (planId && planId !== "free") {
+      router.push(`/dashboard?upgrade=true&plan=${planId}`);
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   const stopAudio = useCallback(() => {
@@ -596,7 +600,7 @@ export default function HomePage() {
                       </li>
                     ))}
                   </ul>
-                  <button onClick={handleActionClick} className={`w-full py-2.5 text-sm ${isPop ? "bg-primary text-white hover:bg-primary/90" : "bg-muted text-foreground border border-border hover:bg-muted/80"} rounded-xl font-semibold active:scale-95 transition-all duration-200`}>{plan.cta}</button>
+                  <button onClick={() => handleActionClick(plan.id)} className={`w-full py-2.5 text-sm ${isPop ? "bg-primary text-white hover:bg-primary/90" : "bg-muted text-foreground border border-border hover:bg-muted/80"} rounded-xl font-semibold active:scale-95 transition-all duration-200`}>{plan.cta}</button>
                 </div>
               );
             })}
@@ -614,7 +618,9 @@ export default function HomePage() {
               </div>
               <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-white tracking-tight" style={{ fontFamily: "var(--font-headline)" }}>{t.cta.title}</h2>
               <p className="text-base mb-8 text-white/75 max-w-xl mx-auto">{t.cta.subtitle}</p>
-              <button onClick={handleActionClick} className="px-8 py-3 bg-white text-primary rounded-full text-sm font-bold hover:bg-white/90 hover:shadow-[0_8px_30px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-200">{t.cta.primary}</button>
+              <button onClick={() => handleActionClick()} className="px-8 py-3 bg-white text-primary rounded-full text-sm font-bold hover:bg-white/90 hover:shadow-[0_8px_30px_-6px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-200">
+                {userId ? (lang === "ar" ? "الذهاب إلى لوحة التحكم" : "Go to Dashboard") : t.cta.primary}
+              </button>
             </div>
           </div>
         </section>
