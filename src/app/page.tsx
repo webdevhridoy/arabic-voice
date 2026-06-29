@@ -122,12 +122,39 @@ export default function HomePage() {
     setText(translations[next].demoText);
   };
 
-  const handleActionClick = (planId?: string) => {
+  const handleActionClick = () => {
     if (typeof window !== "undefined") localStorage.setItem("pending_tts_text", text);
-    if (planId && planId !== "free") {
-      router.push(`/dashboard?upgrade=true&plan=${planId}`);
-    } else {
-      router.push("/dashboard");
+    router.push("/dashboard");
+  };
+
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (planId: string) => {
+    if (planId === "free") {
+      handleActionClick();
+      return;
+    }
+    if (!userId) {
+      router.push("/sign-up");
+      return;
+    }
+    setLoadingPlan(planId);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "Checkout error — please try again.");
+        setLoadingPlan(null);
+      }
+    } catch {
+      alert("Network error — please try again.");
+      setLoadingPlan(null);
     }
   };
 
@@ -246,6 +273,7 @@ export default function HomePage() {
         onClose={() => setShowUpgrade(false)}
         usedChars={(usage?.currentUsage) ?? 0}
         limitChars={(usage?.limit) ?? 0}
+        lang={lang}
       />
 
       {/* ── Background ─────── */}
@@ -600,7 +628,15 @@ export default function HomePage() {
                       </li>
                     ))}
                   </ul>
-                  <button onClick={() => handleActionClick(plan.id)} className={`w-full py-2.5 text-sm ${isPop ? "bg-primary text-white hover:bg-primary/90" : "bg-muted text-foreground border border-border hover:bg-muted/80"} rounded-xl font-semibold active:scale-95 transition-all duration-200`}>{plan.cta}</button>
+                  <button
+                    onClick={() => handleCheckout(plan.id)}
+                    disabled={loadingPlan === plan.id}
+                    className={`w-full py-2.5 text-sm ${isPop ? "bg-primary text-white hover:bg-primary/90" : "bg-muted text-foreground border border-border hover:bg-muted/80"} rounded-xl font-semibold active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
+                  >
+                    {loadingPlan === plan.id ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" />{lang === "ar" ? "جاري التحميل..." : "Loading..."}</>
+                    ) : plan.cta}
+                  </button>
                 </div>
               );
             })}
