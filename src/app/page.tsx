@@ -244,6 +244,14 @@ export default function HomePage() {
     if (waveTimer.current)  clearInterval(waveTimer.current);
   }, []);
 
+  // Reset pricing button loading state when browser restores page from BFCache
+  // (e.g. user clicks Subscribe Now → goes to Lemon Squeezy → hits Back button)
+  useEffect(() => {
+    const handlePageShow = () => setLoadingPlan(null);
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []);
+
   // Voice display labels (bilingual-aware)
   const voiceLabel: Record<VoiceId, string> = {
     ali:    lang === "ar" ? "علي"   : "Ali",
