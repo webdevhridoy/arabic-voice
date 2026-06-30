@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUserGenerations, getUserUsageStats } from "@/actions/generations";
 import { checkIsAdmin } from "@/actions/admin";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ChevronDown, AlertCircle, CheckCircle2, Crown } from "lucide-react";
+import { Loader2, ChevronDown, AlertCircle, CheckCircle2, Crown, Play, Pause, RotateCcw, X, Download } from "lucide-react";
 import { UpgradeModal } from "@/components/upgrade-modal";
 
 // ── Dialects ──────────────────────────────────────────────────────────────
@@ -102,6 +102,93 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // Audio Player Bar States
+  const [playingGen, setPlayingGen] = useState<any>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  // Sync audioElement events with React states
+  useEffect(() => {
+    if (!audioElement) return;
+
+    const onTimeUpdate = () => {
+      setCurrentTime(audioElement.currentTime);
+    };
+    const onDurationChange = () => {
+      setDuration(audioElement.duration || 0);
+    };
+    const onPlay = () => {
+      setIsPlayingAudio(true);
+    };
+    const onPause = () => {
+      setIsPlayingAudio(false);
+    };
+    const onEnded = () => {
+      setIsPlayingAudio(false);
+      setPlayingId(null);
+    };
+
+    // Initialize values
+    setCurrentTime(audioElement.currentTime);
+    setDuration(audioElement.duration || 0);
+    setIsPlayingAudio(!audioElement.paused);
+
+    audioElement.addEventListener("timeupdate", onTimeUpdate);
+    audioElement.addEventListener("durationchange", onDurationChange);
+    audioElement.addEventListener("loadedmetadata", onDurationChange);
+    audioElement.addEventListener("play", onPlay);
+    audioElement.addEventListener("pause", onPause);
+    audioElement.addEventListener("ended", onEnded);
+
+    return () => {
+      audioElement.removeEventListener("timeupdate", onTimeUpdate);
+      audioElement.removeEventListener("durationchange", onDurationChange);
+      audioElement.removeEventListener("loadedmetadata", onDurationChange);
+      audioElement.removeEventListener("play", onPlay);
+      audioElement.removeEventListener("pause", onPause);
+      audioElement.removeEventListener("ended", onEnded);
+    };
+  }, [audioElement]);
+
+  const togglePlayPause = () => {
+    if (!audioElement) return;
+    if (audioElement.paused) {
+      audioElement.play().catch(() => {});
+    } else {
+      audioElement.pause();
+    }
+  };
+
+  const rewind = () => {
+    if (!audioElement) return;
+    audioElement.currentTime = Math.max(0, audioElement.currentTime - 10);
+  };
+
+  const fastForward = () => {
+    if (!audioElement) return;
+    audioElement.currentTime = Math.min(audioElement.duration || 0, audioElement.currentTime + 10);
+  };
+
+  const replay = () => {
+    if (!audioElement) return;
+    audioElement.currentTime = 0;
+    audioElement.play().catch(() => {});
+  };
+
+  const handleSeek = (value: number) => {
+    if (!audioElement) return;
+    audioElement.currentTime = value;
+    setCurrentTime(value);
+  };
+
+  const formatTime = (secs: number) => {
+    if (isNaN(secs) || !isFinite(secs)) return "0:00";
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
+
   const searchParams = useSearchParams();
   const upgraded = searchParams.get("upgraded") === "true";
   const upgradedPlan = searchParams.get("plan") ?? "pro";
@@ -119,11 +206,11 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
     newAudio.playbackRate = playbackRate;
     
     newAudio.play().catch(() => {
-      // Intentionally silenced. In development Next.js forcefully overlays any console.error 
-      // onto the webpage. We just want to silently revert the play button when mock playback fails.
       setPlayingId(null);
     });
 
+    const gen = generations?.find(g => g.id === id);
+    setPlayingGen(gen || { id, audioUrl: url, inputText: isAr ? "صوت تمت معالجته" : "Processed Voice", voiceId: "voice" });
     setPlayingId(id);
     setAudioElement(newAudio);
     
@@ -249,8 +336,11 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
             setAudioElement(el);
             if (generationId) {
               setPlayingId(generationId);
+              const gen = generations?.find(g => g.id === generationId);
+              setPlayingGen(gen || { id: generationId, audioUrl: fullUrl, inputText: text || (isAr ? "نص توليد الصوت" : "Generated Audio"), voiceId });
             } else {
               setPlayingId("stream-final");
+              setPlayingGen({ id: "stream-final", audioUrl: fullUrl, inputText: text || (isAr ? "نص توليد الصوت" : "Generated Audio"), voiceId });
             }
 
             // Clear input box and show success
@@ -751,6 +841,120 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
           )}
         </div>
       </section>
+      {/* Premium Floating Audio Player Bar */}
+      {playingGen && (
+        <div 
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-4xl z-50 bg-white/95 dark:bg-[#121936]/95 border border-gray-200 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-2xl p-4 flex flex-col gap-3 transition-all duration-300 transform translate-y-0"
+          dir={isAr ? "rtl" : "ltr"}
+        >
+          {/* Top Row: Info and close */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 overflow-hidden pr-4 flex-1">
+              <div className="w-8 h-8 rounded-lg bg-[#7C5CFF]/15 flex items-center justify-center text-[#7C5CFF] shrink-0 font-bold text-xs uppercase">
+                {playingGen.voiceId?.slice(0, 2) || "TTS"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                  {isAr ? "الصوت المشغل" : "Now Playing"} • <span className="capitalize font-mono">{playingGen.voiceId}</span>
+                </p>
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate font-cairo" dir="auto">
+                  {playingGen.inputText}
+                </p>
+              </div>
+            </div>
+            <button 
+              onClick={() => {
+                if (audioElement) audioElement.pause();
+                setPlayingId(null);
+                setPlayingGen(null);
+              }}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition p-1 rounded-full hover:bg-gray-100 dark:hover:bg-white/5"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Center/Bottom Row: Progress Bar & Controls */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
+            {/* Time Display */}
+            <span className="text-xs font-mono text-gray-500 dark:text-gray-400 shrink-0">
+              {formatTime(currentTime)}
+            </span>
+
+            {/* Progress Slider */}
+            <input 
+              type="range"
+              min={0}
+              max={duration || 100}
+              value={currentTime}
+              onChange={(e) => handleSeek(parseFloat(e.target.value))}
+              className="flex-1 h-1.5 w-full bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#7C5CFF] focus:outline-none"
+            />
+
+            <span className="text-xs font-mono text-gray-500 dark:text-gray-400 shrink-0">
+              {formatTime(duration)}
+            </span>
+
+            {/* Control Buttons */}
+            <div className="flex items-center gap-3 shrink-0">
+              {/* Replay */}
+              <button 
+                onClick={replay}
+                title={isAr ? "إعادة التشغيل" : "Replay"}
+                className="text-gray-500 hover:text-[#7C5CFF] dark:text-gray-400 dark:hover:text-[#7C5CFF] p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+
+              {/* Rewind 10s */}
+              <button 
+                onClick={rewind}
+                title={isAr ? "تراجع ١٠ ثوان" : "Rewind 10s"}
+                className="text-gray-500 hover:text-[#7C5CFF] dark:text-gray-400 dark:hover:text-[#7C5CFF] p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                </svg>
+              </button>
+
+              {/* Play/Pause */}
+              <button 
+                onClick={togglePlayPause}
+                className="w-10 h-10 rounded-full bg-[#7C5CFF] hover:bg-[#6843FC] text-white flex items-center justify-center shadow-md active:scale-95 transition"
+              >
+                {isPlayingAudio ? (
+                  <Pause className="w-5 h-5 fill-current" />
+                ) : (
+                  <Play className="w-5 h-5 fill-current translate-x-[1px] rtl:-translate-x-[1px]" />
+                )}
+              </button>
+
+              {/* Fast Forward 10s */}
+              <button 
+                onClick={fastForward}
+                title={isAr ? "تقديم ١٠ ثوان" : "Fast Forward 10s"}
+                className="text-gray-500 hover:text-[#7C5CFF] dark:text-gray-400 dark:hover:text-[#7C5CFF] p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3" />
+                </svg>
+              </button>
+
+              {/* Download */}
+              {playingGen.audioUrl && (
+                <a 
+                  href={playingGen.audioUrl}
+                  download={`sawti-${playingGen.id}.mp3`}
+                  title={isAr ? "تحميل" : "Download"}
+                  className="text-gray-500 hover:text-[#20C7B7] dark:text-gray-400 dark:hover:text-[#20C7B7] p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition"
+                >
+                  <Download className="w-4 h-4" />
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
