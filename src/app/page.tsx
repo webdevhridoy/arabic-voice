@@ -135,7 +135,7 @@ export default function HomePage() {
       return;
     }
     if (!userId) {
-      router.push("/sign-up");
+      router.push(`/sign-up?force_redirect_url=${encodeURIComponent(`/api/checkout/redirect?plan=${planId}`)}`);
       return;
     }
     setLoadingPlan(planId);

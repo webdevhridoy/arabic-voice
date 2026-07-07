@@ -41,3 +41,40 @@ export async function getBillingData() {
     usage,
   };
 }
+
+export async function getCustomerPortalUrl() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const subscription = await prisma.subscription.findUnique({ where: { userId } });
+  
+  // Base unsigned portal URL in case retrieval fails or no customer exists yet
+  const fallbackUrl = "https://sawti.lemonsqueezy.com/billing";
+
+  if (!subscription || !subscription.lsCustomerId) {
+    return fallbackUrl;
+  }
+
+  try {
+    const res = await fetch(`https://api.lemonsqueezy.com/v1/customers/${subscription.lsCustomerId}`, {
+      headers: {
+        "Accept": "application/vnd.api+json",
+        "Content-Type": "application/vnd.api+json",
+        "Authorization": `Bearer ${process.env.LEMONSQUEEZY_API_KEY}`,
+      },
+      next: { revalidate: 0 } // Do not cache customer portal URLs which expire
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch customer from Lemon Squeezy:", await res.text());
+      return fallbackUrl;
+    }
+
+    const json = await res.json();
+    const portalUrl = json?.data?.attributes?.urls?.customer_portal;
+    return portalUrl || fallbackUrl;
+  } catch (err) {
+    console.error("Error retrieving Lemon Squeezy portal URL:", err);
+    return fallbackUrl;
+  }
+}

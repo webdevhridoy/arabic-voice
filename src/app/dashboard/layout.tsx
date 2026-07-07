@@ -20,9 +20,8 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const { data: isAdmin } = useSWR("layout-check-admin", () => checkIsAdmin(), { revalidateOnFocus: false });
 
   const links = [
-    { name: "المولد (Generator)", short: "المولد", href: "/dashboard", icon: Mic2 },
     { name: "السجل (History)", short: "السجل", href: "/dashboard/history", icon: History },
-    { name: "الفواتير (Billing)", short: "الفواتير", href: "/dashboard/billing", icon: CreditCard },
+    { name: "الاشتراك (Subscription)", short: "الاشتراك", href: "/dashboard/billing", icon: CreditCard },
     { name: "الإعدادات (Settings)", short: "الإعدادات", href: "/dashboard/settings", icon: Settings },
   ];
 
