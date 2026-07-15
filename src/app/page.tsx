@@ -346,94 +346,43 @@ export default function HomePage() {
         {/* ── 1. Hero ──────────────────────────────────────────── */}
         <section className="relative max-w-7xl mx-auto px-6 pt-8 pb-16 md:pb-24">
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-            {/* Hero text */}
-            <div className={ta}>
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-xs font-semibold mb-7 cursor-default">
-                <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-                <span>{t.hero.badge}</span>
-              </div>
-              <h1 className="text-5xl md:text-[4.25rem] font-extrabold leading-[1.08] mb-5 tracking-tight" style={{ fontFamily: "var(--font-headline)" }}>
-                <span className="text-foreground">{t.hero.headline1}</span><br />
-                <span className="text-gradient">{t.hero.headline2}</span><br />
-                <span className="text-foreground">{t.hero.headline3}</span>
-              </h1>
-              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-9 max-w-lg">
-                {t.hero.subtext}
-              </p>
-              <div className={`flex flex-col sm:flex-row gap-3 ${isAr ? "justify-start flex-row-reverse" : "justify-start"}`}>
-                <button
-                  onClick={() => document.getElementById("live-demo")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-full sm:w-auto px-7 py-3.5 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary/90 hover:shadow-[0_8px_30px_-6px_rgba(124,92,255,0.55)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 group"
-                >
-                  {t.hero.ctaPrimary}
-                  <PlayCircle className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                </button>
-                <button
-                  onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-full sm:w-auto px-7 py-3.5 bg-card text-foreground border border-border rounded-full text-sm font-semibold hover:bg-muted hover:border-border hover:-translate-y-0.5 transition-all duration-200 card-shadow"
-                >
-                  {t.hero.ctaSecondary}
-                </button>
-              </div>
+          <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-xs font-semibold mb-6 cursor-default">
+              <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
+              <span>{t.hero.badge}</span>
             </div>
+            
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.15] mb-6 tracking-tight max-w-4xl" style={{ fontFamily: "var(--font-headline)" }}>
+              <span className="text-foreground">{t.hero.headline1} </span>
+              <span className="text-gradient">{t.hero.headline2} </span>
+              <span className="text-foreground">{t.hero.headline3}</span>
+            </h1>
 
-            {/* ── HERO CARD (decorative live-preview) ─────────── */}
-            <div className="relative group">
-              {/* Outer glow */}
-              <div className="absolute -inset-2 bg-gradient-to-br from-secondary/20 via-primary/15 to-transparent rounded-[2rem] blur-2xl opacity-60 group-hover:opacity-90 transition-opacity duration-700" />
-              <div className="relative bg-card border border-border/70 card-shadow rounded-2xl p-6 group-hover:border-secondary/30 transition-all duration-500">
-                {/* Window chrome */}
-                <div className="flex items-center justify-between mb-5" dir="ltr">
-                  <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
-                  </div>
-                  <span className="text-[11px] font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-md">{t.hero.cardLabel}</span>
-                </div>
-                {/* Editable text */}
-                <textarea
-                  value={text}
-                  onChange={e => setText(e.target.value)}
-                  className="w-full h-28 bg-transparent text-foreground border-none resize-none focus:ring-0 text-lg md:text-xl outline-none placeholder:text-muted-foreground leading-relaxed"
-                  dir="rtl"
-                />
-                {/* Vivid teal waveform bars */}
-                <div className="flex items-end gap-[3px] h-14 mt-4 mb-5 justify-center px-2" dir="ltr">
-                  {STATIC_HEIGHTS.map((h, i) => (
-                    <div
-                      key={i}
-                      className="rounded-full flex-shrink-0"
-                      style={{
-                        width: "4px",
-                        height: `${h}%`,
-                        background: `linear-gradient(to top, #20C7B7, ${i % 3 === 0 ? "#7C5CFF" : i % 3 === 1 ? "#4BBFFF" : "#20C7B7"})`,
-                        opacity: 0.85,
-                        animation: `wave-bar ${0.8 + (i % 5) * 0.15}s ease-in-out infinite`,
-                        animationDelay: `${i * 0.04}s`,
-                        transformOrigin: "bottom",
-                      }}
-                    />
-                  ))}
-                </div>
-                {/* Try Now CTA */}
-                <button
-                  onClick={() => document.getElementById("live-demo")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-full py-3 bg-secondary text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-secondary/90 hover:shadow-[0_6px_24px_-6px_rgba(32,199,183,0.55)] hover:scale-[1.02] active:scale-95 transition-all duration-200"
-                >
-                  <Volume2 className="w-4 h-4" />
-                  {t.hero.cardCta}
-                </button>
-              </div>
+            <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-9 max-w-2xl">
+              {t.hero.subtext}
+            </p>
+
+            <div className={`flex flex-col sm:flex-row gap-4 justify-center items-center`}>
+              <button
+                onClick={() => document.getElementById("live-demo")?.scrollIntoView({ behavior: "smooth" })}
+                className="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-full text-sm font-bold hover:bg-primary/90 hover:shadow-[0_8px_30px_-6px_rgba(124,92,255,0.55)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 group"
+              >
+                {t.hero.ctaPrimary}
+                <PlayCircle className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+              </button>
+              <button
+                onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
+                className="w-full sm:w-auto px-8 py-4 bg-card text-foreground border border-border rounded-full text-sm font-bold hover:bg-muted hover:border-border hover:-translate-y-0.5 transition-all duration-200 card-shadow"
+              >
+                {t.hero.ctaSecondary}
+              </button>
             </div>
           </div>
         </section>
 
         {/* ── LIVE TTS SECTION (fully functional) ─────────────── */}
-        <section id="live-demo" className="max-w-4xl mx-auto px-6 mb-16 md:mb-24">
+        <section id="live-demo" className="max-w-6xl mx-auto px-6 mb-16 md:mb-24">
           {/* Heading */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/15 text-primary text-xs font-semibold mb-4 cursor-default">

@@ -388,7 +388,7 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8" dir={isAr ? "rtl" : "ltr"}>
+    <div className="max-w-6xl mx-auto space-y-8" dir={isAr ? "rtl" : "ltr"}>
       {/* Success Toast */}
       {successMessage && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-teal-500 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5 fade-in duration-300 font-cairo">
@@ -521,205 +521,209 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
         </Tabs>
 
           {/* Voice + Dialect — hidden on Audio (STT) tab */}
-          {activeTab !== "audio" && <div className="mt-6 border-t border-gray-200 dark:border-white/5 pt-5 space-y-4">
+          {activeTab !== "audio" && (
+            <div className="mt-6 border-t border-gray-200 dark:border-white/5 pt-5 space-y-5">
 
-            {/* ── Persistent Upgrade Plan button (Free Users Only) ───────────────── */}
-            {(!usage || usage.limit <= 10_000) && (
-              <button
-                onClick={() => setShowUpgrade(true)}
-                disabled={isSubmitting}
-                className="w-full flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#7C5CFF]/10 to-[#20C7B7]/10 border border-[#7C5CFF]/30 dark:border-[#7C5CFF]/30 rounded-xl text-[#7C5CFF] hover:bg-[#7C5CFF]/20 hover:border-[#7C5CFF]/50 transition-all duration-300 group shadow-sm disabled:opacity-50"
-              >
-                <div className="flex items-center gap-2 font-cairo font-bold">
-                  <Crown className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  {isAr ? "ترقية الخطة" : "Upgrade Plan"}
+              {/* ── Persistent Upgrade Plan button (Free Users Only) ───────────────── */}
+              {(!usage || usage.limit <= 10_000) && (
+                <button
+                  onClick={() => setShowUpgrade(true)}
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-between px-4 py-3 bg-gradient-to-r from-[#7C5CFF]/10 to-[#20C7B7]/10 border border-[#7C5CFF]/30 dark:border-[#7C5CFF]/30 rounded-xl text-[#7C5CFF] hover:bg-[#7C5CFF]/20 hover:border-[#7C5CFF]/50 transition-all duration-300 group shadow-sm disabled:opacity-50"
+                >
+                  <div className="flex items-center gap-2 font-cairo font-bold">
+                    <Crown className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    {isAr ? "ترقية الخطة" : "Upgrade Plan"}
+                  </div>
+                  <span className="text-xs font-mono font-bold bg-[#7C5CFF]/10 px-2.5 py-1 rounded-md text-[#7C5CFF]">
+                    {isAr ? `الحد المتبقي: ${usage?.remaining ? usage.remaining.toLocaleString() : "جاري التحميل..."}` : `${usage?.remaining ? usage.remaining.toLocaleString() : "Loading..."} remaining`}
+                  </span>
+                </button>
+              )}
+
+              {/* Grid layout for the Dialect, Voice, and Speed selectors */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {/* ── Dialect picker ───────────────────────────────── */}
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-500 font-semibold uppercase tracking-widest block mb-2">
+                    {isAr ? "اللهجة" : "Dialect"}
+                  </label>
+                  <div className="relative" dir="ltr">
+                    <button
+                      onClick={() => setDialectOpen(o => !o)}
+                      disabled={isSubmitting}
+                      className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white hover:border-[#7C5CFF]/50 transition-all duration-200 disabled:opacity-50"
+                    >
+                      <div className="flex items-center gap-3">
+                        {(() => {
+                          const d = DIALECTS.find(x => x.id === dialect);
+                          return (
+                            <>
+                              <span className="text-base">{d?.flag}</span>
+                              <span className="font-semibold text-sm">{isAr ? `${d?.label}` : `${d?.labelEn}`}</span>
+                              <span className="text-gray-400">·</span>
+                              <span className="text-xs text-gray-500">{d?.desc}</span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dialectOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {dialectOpen && (
+                      <div className="absolute top-full mt-2 left-0 right-0 bg-white dark:bg-[#121936] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                        <div className="p-1.5 max-h-[320px] overflow-y-auto">
+                          {DIALECTS.map(d => {
+                            const isSelected = d.id === dialect;
+                            return (
+                              <button
+                                key={d.id}
+                                onClick={() => {
+                                  setDialect(d.id);
+                                  const first = VOICE_DATA.find(v => v.dialect === d.id);
+                                  if (first) setVoiceId(first.id as VoiceId);
+                                  setDialectOpen(false);
+                                }}
+                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 ${
+                                  isSelected
+                                    ? "bg-[#7C5CFF]/10 text-[#7C5CFF]"
+                                    : "hover:bg-gray-50 dark:hover:bg-white/5 text-gray-900 dark:text-white"
+                                }`}
+                              >
+                                <span className="text-base flex-shrink-0">{d.flag}</span>
+                                <span className="font-semibold text-sm flex-shrink-0">{isAr ? d.label : d.labelEn}</span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400 ms-auto">{d.desc}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <span className="text-xs font-mono font-bold bg-[#7C5CFF]/10 px-2.5 py-1 rounded-md text-[#7C5CFF]">
-                  {isAr ? `الحد المتبقي: ${usage?.remaining ? usage.remaining.toLocaleString() : "جاري التحميل..."}` : `${usage?.remaining ? usage.remaining.toLocaleString() : "Loading..."} remaining`}
-                </span>
-              </button>
-            )}
 
-            {/* ── Dialect picker ───────────────────────────────── */}
-            <div>
-              <label className="text-xs text-gray-500 dark:text-gray-500 font-semibold uppercase tracking-widest block mb-2">
-                {isAr ? "اللهجة" : "Dialect"}
-              </label>
-              <div className="relative" dir="ltr">
-                <button
-                  onClick={() => setDialectOpen(o => !o)}
-                  disabled={isSubmitting}
-                  className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white hover:border-[#7C5CFF]/50 transition-all duration-200 disabled:opacity-50"
-                >
-                  <div className="flex items-center gap-3">
-                    {(() => {
-                      const d = DIALECTS.find(x => x.id === dialect);
-                      return (
-                        <>
-                          <span className="text-base">{d?.flag}</span>
-                          <span className="font-semibold text-sm">{isAr ? `${d?.label}` : `${d?.labelEn}`}</span>
-                          <span className="text-gray-400">·</span>
-                          <span className="text-xs text-gray-500">{d?.desc}</span>
-                        </>
-                      );
-                    })()}
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dialectOpen ? "rotate-180" : ""}`} />
-                </button>
+                {/* ── Voice dropdown ───────────────────────────────── */}
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-500 font-semibold uppercase tracking-widest block mb-2">
+                    {isAr ? "الصوت" : "Voice"}
+                  </label>
 
-                {dialectOpen && (
-                  <div className="absolute top-full mt-2 left-0 right-0 bg-white dark:bg-[#121936] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
-                    <div className="p-1.5 max-h-[320px] overflow-y-auto">
-                      {DIALECTS.map(d => {
-                        const isSelected = d.id === dialect;
-                        return (
-                          <button
-                            key={d.id}
-                            onClick={() => {
-                              setDialect(d.id);
-                              const first = VOICE_DATA.find(v => v.dialect === d.id);
-                              if (first) setVoiceId(first.id as VoiceId);
-                              setDialectOpen(false);
-                            }}
-                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 ${
-                              isSelected
-                                ? "bg-[#7C5CFF]/10 text-[#7C5CFF]"
-                                : "hover:bg-gray-50 dark:hover:bg-white/5 text-gray-900 dark:text-white"
-                            }`}
-                          >
-                            <span className="text-base flex-shrink-0">{d.flag}</span>
-                            <span className="font-semibold text-sm flex-shrink-0">{isAr ? d.label : d.labelEn}</span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400 ms-auto">{d.desc}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
+                  <div className="relative" dir="ltr">
+                    <button
+                      onClick={() => setVoiceOpen(o => !o)}
+                      disabled={isSubmitting}
+                      className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white hover:border-[#7C5CFF]/50 transition-all duration-200 disabled:opacity-50"
+                    >
+                      <div className="flex items-center gap-3">
+                        {(() => {
+                          const v = VOICE_DATA.find(x => x.id === voiceId) ?? VOICE_DATA[0];
+                          const d = DIALECTS.find(x => x.id === v.dialect);
+                          const dotColor = v.gender === "female" ? "bg-[#20C7B7]" : v.popular ? "bg-[#7C5CFF]" : "bg-[#D6B25E]";
+                          return (
+                            <>
+                              <span className="text-base">{d?.flag}</span>
+                              <div className={`w-2 h-2 rounded-full ${dotColor}`} />
+                              <span className="font-semibold text-sm">{isAr ? v.nameAr : v.nameEn}</span>
+                              <span className="text-gray-400">·</span>
+                              <span className="text-xs text-gray-500">{v.style}</span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${voiceOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {voiceOpen && (
+                      <div className="absolute top-full mt-2 left-0 right-0 bg-white dark:bg-[#121936] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                        <div className="p-1.5 max-h-[320px] overflow-y-auto">
+                          {VOICE_DATA.filter(v => v.dialect === dialect).map(v => {
+                            const isSelected = v.id === voiceId;
+                            const dotColor   = v.gender === "female" ? "bg-[#20C7B7]" : v.popular ? "bg-[#7C5CFF]" : "bg-[#D6B25E]";
+                            return (
+                              <button
+                                key={v.id}
+                                onClick={() => { setVoiceId(v.id); setVoiceOpen(false); }}
+                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 ${
+                                  isSelected
+                                    ? "bg-[#7C5CFF]/10 text-[#7C5CFF]"
+                                    : "hover:bg-gray-50 dark:hover:bg-white/5 text-gray-900 dark:text-white"
+                                }`}
+                              >
+                                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isSelected ? "bg-[#7C5CFF]" : dotColor}`} />
+                                <span className="font-semibold text-sm flex-shrink-0">{isAr ? v.nameAr : v.nameEn}</span>
+                                <span className="text-xs text-gray-400 flex-shrink-0">
+                                  {v.gender === "female" ? (isAr ? "أنثى" : "Female") : (isAr ? "ذكر" : "Male")}
+                                </span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400 ms-auto">{v.style}</span>
+                                {v.popular && (
+                                  <span className="text-[10px] font-bold text-[#7C5CFF] bg-[#7C5CFF]/10 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                                    {isAr ? "شائع" : "Popular"}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+
+                {/* ── Speed dropdown ───────────────────────────────── */}
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-500 font-semibold uppercase tracking-widest block mb-2">
+                    {isAr ? "سرعة التشغيل" : "Playback Speed"}
+                  </label>
+
+                  <div className="relative" dir="ltr">
+                    <button
+                      onClick={() => setSpeedOpen(o => !o)}
+                      disabled={isSubmitting}
+                      className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white hover:border-[#7C5CFF]/50 transition-all duration-200 disabled:opacity-50"
+                    >
+                      <div className="flex items-center gap-3">
+                        {(() => {
+                          const s = SPEEDS.find(x => x.value === playbackRate) || SPEEDS[2];
+                          return (
+                            <>
+                              <span className="text-base">{s.icon}</span>
+                              <span className="font-semibold text-sm">{isAr ? s.label : s.labelEn}</span>
+                              <span className="text-gray-400">·</span>
+                              <span className="text-xs text-gray-500">{s.value}x</span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${speedOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {speedOpen && (
+                      <div className="absolute top-full mt-2 left-0 right-0 bg-white dark:bg-[#121936] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                        <div className="p-1.5">
+                          {SPEEDS.map(s => {
+                            const isSelected = s.value === playbackRate;
+                            return (
+                              <button
+                                key={s.value}
+                                onClick={() => { setPlaybackRate(s.value); setSpeedOpen(false); }}
+                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 ${
+                                  isSelected
+                                    ? "bg-[#7C5CFF]/10 text-[#7C5CFF]"
+                                    : "hover:bg-gray-50 dark:hover:bg-white/5 text-gray-900 dark:text-white"
+                                }`}
+                              >
+                                <span className="text-base flex-shrink-0">{s.icon}</span>
+                                <span className="font-semibold text-sm flex-shrink-0">{isAr ? s.label : s.labelEn}</span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400 ms-auto">{s.value}x</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {/* ── Voice dropdown ───────────────────────────────── */}
-            <div>
-              <label className="text-xs text-gray-500 dark:text-gray-500 font-semibold uppercase tracking-widest block mb-2">
-                {isAr ? "الصوت" : "Voice"}
-              </label>
-
-              <div className="relative" dir="ltr">
-                <button
-                  onClick={() => setVoiceOpen(o => !o)}
-                  disabled={isSubmitting}
-                  className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white hover:border-[#7C5CFF]/50 transition-all duration-200 disabled:opacity-50"
-                >
-                  <div className="flex items-center gap-3">
-                    {(() => {
-                      const v = VOICE_DATA.find(x => x.id === voiceId) ?? VOICE_DATA[0];
-                      const d = DIALECTS.find(x => x.id === v.dialect);
-                      const dotColor = v.gender === "female" ? "bg-[#20C7B7]" : v.popular ? "bg-[#7C5CFF]" : "bg-[#D6B25E]";
-                      return (
-                        <>
-                          <span className="text-base">{d?.flag}</span>
-                          <div className={`w-2 h-2 rounded-full ${dotColor}`} />
-                          <span className="font-semibold text-sm">{isAr ? v.nameAr : v.nameEn}</span>
-                          <span className="text-gray-400">·</span>
-                          <span className="text-xs text-gray-500">{v.style}</span>
-                        </>
-                      );
-                    })()}
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${voiceOpen ? "rotate-180" : ""}`} />
-                </button>
-
-                {voiceOpen && (
-                  <div className="absolute top-full mt-2 left-0 right-0 bg-white dark:bg-[#121936] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
-                    <div className="p-1.5 max-h-[320px] overflow-y-auto">
-                      {VOICE_DATA.filter(v => v.dialect === dialect).map(v => {
-                        const isSelected = v.id === voiceId;
-                        const dotColor   = v.gender === "female" ? "bg-[#20C7B7]" : v.popular ? "bg-[#7C5CFF]" : "bg-[#D6B25E]";
-                        return (
-                          <button
-                            key={v.id}
-                            onClick={() => { setVoiceId(v.id); setVoiceOpen(false); }}
-                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 ${
-                              isSelected
-                                ? "bg-[#7C5CFF]/10 text-[#7C5CFF]"
-                                : "hover:bg-gray-50 dark:hover:bg-white/5 text-gray-900 dark:text-white"
-                            }`}
-                          >
-                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isSelected ? "bg-[#7C5CFF]" : dotColor}`} />
-                            <span className="font-semibold text-sm flex-shrink-0">{isAr ? v.nameAr : v.nameEn}</span>
-                            <span className="text-xs text-gray-400 flex-shrink-0">
-                              {v.gender === "female" ? (isAr ? "أنثى" : "Female") : (isAr ? "ذكر" : "Male")}
-                            </span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400 ms-auto">{v.style}</span>
-                            {v.popular && (
-                              <span className="text-[10px] font-bold text-[#7C5CFF] bg-[#7C5CFF]/10 px-1.5 py-0.5 rounded-full flex-shrink-0">
-                                {isAr ? "شائع" : "Popular"}
-                              </span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* ── Speed dropdown ───────────────────────────────── */}
-            <div>
-              <label className="text-xs text-gray-500 dark:text-gray-500 font-semibold uppercase tracking-widest block mb-2">
-                {isAr ? "سرعة التشغيل" : "Playback Speed"}
-              </label>
-
-              <div className="relative" dir="ltr">
-                <button
-                  onClick={() => setSpeedOpen(o => !o)}
-                  disabled={isSubmitting}
-                  className="flex items-center justify-between w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white hover:border-[#7C5CFF]/50 transition-all duration-200 disabled:opacity-50"
-                >
-                  <div className="flex items-center gap-3">
-                    {(() => {
-                      const s = SPEEDS.find(x => x.value === playbackRate) || SPEEDS[2];
-                      return (
-                        <>
-                          <span className="text-base">{s.icon}</span>
-                          <span className="font-semibold text-sm">{isAr ? s.label : s.labelEn}</span>
-                          <span className="text-gray-400">·</span>
-                          <span className="text-xs text-gray-500">{s.value}x</span>
-                        </>
-                      );
-                    })()}
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${speedOpen ? "rotate-180" : ""}`} />
-                </button>
-
-                {speedOpen && (
-                  <div className="absolute top-full mt-2 left-0 right-0 bg-white dark:bg-[#121936] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
-                    <div className="p-1.5">
-                      {SPEEDS.map(s => {
-                        const isSelected = s.value === playbackRate;
-                        return (
-                          <button
-                            key={s.value}
-                            onClick={() => { setPlaybackRate(s.value); setSpeedOpen(false); }}
-                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 ${
-                              isSelected
-                                ? "bg-[#7C5CFF]/10 text-[#7C5CFF]"
-                                : "hover:bg-gray-50 dark:hover:bg-white/5 text-gray-900 dark:text-white"
-                            }`}
-                          >
-                            <span className="text-base flex-shrink-0">{s.icon}</span>
-                            <span className="font-semibold text-sm flex-shrink-0">{isAr ? s.label : s.labelEn}</span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400 ms-auto">{s.value}x</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
 
             {/* Generate button */}
             <div className="flex justify-end pt-1">
@@ -744,7 +748,8 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
                 </span>
               </button>
             </div>
-          </div>}
+          </div>
+          )}
 
           {/* Generate button — Audio/URL tabs (Extraction) */}
           {(activeTab === "audio" || activeTab === "url") && (
