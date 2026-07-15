@@ -341,39 +341,39 @@ export default function HomePage() {
         </div>
       </nav>
 
-      <main className="pt-28">
+      <main className="pt-20">
 
         {/* ── 1. Hero ──────────────────────────────────────────── */}
-        <section className="relative max-w-7xl mx-auto px-6 pt-8 pb-16 md:pb-24">
+        <section className="relative max-w-7xl mx-auto px-6 pt-4 pb-8 md:pb-10">
 
-          <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+          <div className="flex flex-col items-center text-center max-w-6xl mx-auto">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-xs font-semibold mb-6 cursor-default">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-xs font-semibold mb-4 cursor-default">
               <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
               <span>{t.hero.badge}</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.15] mb-6 tracking-tight max-w-4xl" style={{ fontFamily: "var(--font-headline)" }}>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.12] mb-4 tracking-tight max-w-5xl" style={{ fontFamily: "var(--font-headline)" }}>
               <span className="text-foreground">{t.hero.headline1} </span>
               <span className="text-gradient">{t.hero.headline2} </span>
               <span className="text-foreground">{t.hero.headline3}</span>
             </h1>
 
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-9 max-w-2xl">
+            <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-6 max-w-3xl">
               {t.hero.subtext}
             </p>
 
             <div className={`flex flex-col sm:flex-row gap-4 justify-center items-center`}>
               <button
                 onClick={() => document.getElementById("live-demo")?.scrollIntoView({ behavior: "smooth" })}
-                className="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-full text-sm font-bold hover:bg-primary/90 hover:shadow-[0_8px_30px_-6px_rgba(124,92,255,0.55)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 group"
+                className="w-full sm:w-auto px-8 py-3.5 bg-primary text-white rounded-full text-sm font-bold hover:bg-primary/90 hover:shadow-[0_8px_30px_-6px_rgba(124,92,255,0.55)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 group"
               >
                 {t.hero.ctaPrimary}
                 <PlayCircle className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
               </button>
               <button
                 onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-                className="w-full sm:w-auto px-8 py-4 bg-card text-foreground border border-border rounded-full text-sm font-bold hover:bg-muted hover:border-border hover:-translate-y-0.5 transition-all duration-200 card-shadow"
+                className="w-full sm:w-auto px-8 py-3.5 bg-card text-foreground border border-border rounded-full text-sm font-bold hover:bg-muted hover:border-border hover:-translate-y-0.5 transition-all duration-200 card-shadow"
               >
                 {t.hero.ctaSecondary}
               </button>
@@ -382,9 +382,9 @@ export default function HomePage() {
         </section>
 
         {/* ── LIVE TTS SECTION (fully functional) ─────────────── */}
-        <section id="live-demo" className="max-w-6xl mx-auto px-6 mb-16 md:mb-24">
+        <section id="live-demo" className="max-w-6xl mx-auto px-6 mb-12 md:mb-16">
           {/* Heading */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/15 text-primary text-xs font-semibold mb-4 cursor-default">
               <Volume2 className="w-3.5 h-3.5" />
               <span>{lang === "ar" ? "جرّب الآن مجاناً" : "Try It Free — Right Now"}</span>
