@@ -32,15 +32,24 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
 };
 
-export default function RootLayout({
+import { headers } from "next/headers";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerList = await headers();
+  const pathname = headerList.get("x-pathname") || "";
+  const isAr = pathname.startsWith("/ar") || pathname.includes("/ar/");
+  const lang = isAr ? "ar" : "en";
+  const dir = isAr ? "rtl" : "ltr";
+
   return (
     <ClerkProvider>
       <html
-        lang="en"
+        lang={lang}
+        dir={dir}
         className={`${inter.variable} ${cairo.variable} h-full antialiased`}
         suppressHydrationWarning
       >

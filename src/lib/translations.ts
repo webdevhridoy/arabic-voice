@@ -206,6 +206,24 @@ export const translations = {
       primary: "Create Your Account",
       secondary: "Try Free",
     },
+    faq: {
+      title: "Frequently Asked Questions",
+      subtitle: "Got questions? We've got answers.",
+      items: [
+        {
+          q: "What is Sawti?",
+          a: "Sawti is a premium Arabic Text to Speech platform powered by advanced AI models, designed to convert written Arabic into highly natural, human-like voiceovers in seconds."
+        },
+        {
+          q: "Can I download the generated audio?",
+          a: "Yes! You can download high-quality MP3 audio files directly to your device and use them in your videos, podcasts, presentations, or educational content."
+        },
+        {
+          q: "Which dialects do you support?",
+          a: "We support Modern Standard Arabic (MSA) as well as various regional dialects. You can choose from different voice options and adjust playback speed to fit your project."
+        }
+      ]
+    },
     footer: {
       product: "Product",
       pricing: "Pricing",
@@ -420,6 +438,24 @@ export const translations = {
         "انضم إلى صناع المحتوى الذين يرتقون بمشاريعهم من خلال توليد صوت يعكس الاحترافية العالية.",
       primary: "أنشئ حسابك",
       secondary: "جرب مجاناً",
+    },
+    faq: {
+      title: "الأسئلة الشائعة",
+      subtitle: "لديك أسئلة؟ لدينا الإجابات.",
+      items: [
+        {
+          q: "ما هو صوتي؟",
+          a: "صوتي هي منصة متطورة لتحويل النص العربي إلى صوت طبيعي باستخدام الذكاء الاصطناعي، تمكنك من تحويل النصوص المكتوبة إلى تعليقات صوتية شبيهة بالبشر في ثوانٍ معدودة."
+        },
+        {
+          q: "هل يمكنني تحميل الصوت المولد؟",
+          a: "نعم! يمكنك تحميل ملفات صوتية بصيغة MP3 عالية الجودة مباشرة إلى جهازك واستخدمها في مقاطع الفيديو، أو البودكاست، أو العروض التقديمية، أو المحتوى التعليمي."
+        },
+        {
+          q: "ما هي اللهجات التي تدعمها المنصة؟",
+          a: "نحن ندعم الفصحى الحديثة بالإضافة إلى مختلف اللهجات العربية الإقليمية. يمكنك الاختيار من بين خيارات أصوات متعددة وضبط سرعة التشغيل لتناسب مشروعك."
+        }
+      ]
     },
     footer: {
       product: "المنتج",
