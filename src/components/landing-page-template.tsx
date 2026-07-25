@@ -112,6 +112,7 @@ interface LandingPageTemplateProps {
     ctaSecondary?: string;
   };
   faqOverrides?: { q: string; a: string }[];
+  onlyPricing?: boolean;
 }
 
 export function LandingPageTemplate({
@@ -124,6 +125,7 @@ export function LandingPageTemplate({
   isLoaded,
   heroOverrides,
   faqOverrides,
+  onlyPricing = false,
 }: LandingPageTemplateProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -222,7 +224,9 @@ export function LandingPageTemplate({
       </nav>
 
       <main className="pt-20">
-        {/* ── 1. Hero ──────────────────────────────────────────── */}
+        {!onlyPricing && (
+          <>
+            {/* ── 1. Hero ──────────────────────────────────────────── */}
         <section className="relative max-w-7xl mx-auto px-6 pt-4 pb-8 md:pb-10">
           <div className="flex flex-col items-center text-center max-w-6xl mx-auto">
             {/* Badge */}
@@ -416,6 +420,8 @@ export function LandingPageTemplate({
             </div>
           </div>
         </section>
+      </>
+    )}
 
         {/* ── 7. Pricing ─────────────────────────────────────────── */}
         <section id="pricing" className="max-w-5xl mx-auto px-6 mb-24">
@@ -459,7 +465,9 @@ export function LandingPageTemplate({
           </div>
         </section>
 
-        {/* ── 8. FAQ Section ──────────────────────────────────────── */}
+      {!onlyPricing && (
+        <>
+          {/* ── 8. FAQ Section ──────────────────────────────────────── */}
         {resolvedFaq.length > 0 && (
           <section id="faq" className="max-w-4xl mx-auto px-6 mb-24">
             <div className="text-center mb-10">
@@ -494,7 +502,9 @@ export function LandingPageTemplate({
             </div>
           </div>
         </section>
-      </main>
+      </>
+    )}
+  </main>
 
       {/* ── Footer ─────────────────────────────────────────────── */}
       <footer className="w-full py-8 border-t border-border/60 bg-background">

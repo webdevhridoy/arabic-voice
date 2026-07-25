@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import { HomePageClient } from "@/components/home-page-client";
+import { PricingPageClient } from "@/components/pricing-page-client";
 import { type Lang } from "@/lib/translations";
 import type { Metadata } from "next";
 
-// Statically pre-render [lang] paths for english and arabic
+// Statically pre-render [lang]/pricing paths for english and arabic
 export function generateStaticParams() {
   return [{ lang: "en" }, { lang: "ar" }];
 }
@@ -22,27 +22,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const siteUrl = "https://getsawti.com";
   const title = lang === "ar" 
-    ? "صوتي – تحويل النص إلى كلام عربي بأصوات طبيعية" 
-    : "Sawti – Arabic Text to Speech with Natural AI Voices";
+    ? "الأسعار – صوتي لتحويل النص إلى كلام" 
+    : "Pricing – Sawti Arabic Text to Speech";
   const description = lang === "ar"
-    ? "حوّل النص العربي إلى صوت طبيعي في ثوانٍ. أصوات ذكاء اصطناعي عربية أصلية بجودة استوديو، بالفصحى واللهجات. جرّب مجاناً بدون تسجيل."
-    : "Convert Arabic text to natural speech in seconds. Authentic Arabic AI voices, MSA and dialects, studio quality. Try it free, no signup needed.";
+    ? "باقات بسيطة لصنّاع المحتوى والشركات. أنشئ صوتاً عربياً بجودة استوديو باشتراك شهري مرن. ابدأ مجاناً."
+    : "Simple plans for creators and businesses. Generate studio-quality Arabic audio with flexible monthly subscriptions. Start free.";
 
   return {
     title,
     description,
     alternates: {
-      canonical: `${siteUrl}/${lang}`,
+      canonical: `${siteUrl}/${lang}/pricing`,
       languages: {
-        en: `${siteUrl}/en`,
-        ar: `${siteUrl}/ar`,
-        "x-default": `${siteUrl}/ar`, // default to Arabic
+        en: `${siteUrl}/en/pricing`,
+        ar: `${siteUrl}/ar/pricing`,
+        "x-default": `${siteUrl}/ar/pricing`, // default to Arabic
       },
     },
     openGraph: {
       title,
       description,
-      url: `${siteUrl}/${lang}`,
+      url: `${siteUrl}/${lang}/pricing`,
       siteName: "Sawti | صوتي",
       locale: lang === "ar" ? "ar_AR" : "en_US",
       type: "website",
@@ -62,5 +62,5 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  return <HomePageClient lang={lang as Lang} />;
+  return <PricingPageClient lang={lang as Lang} />;
 }
