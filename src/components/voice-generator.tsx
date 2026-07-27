@@ -74,7 +74,15 @@ const VOICE_DATA = [
 ] as const;
 type VoiceId = typeof VOICE_DATA[number]["id"];
 
-export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
+export function VoiceGenerator({ 
+  lang = "ar",
+  defaultDialect = "msa",
+  defaultVoiceId = "ali"
+}: { 
+  lang?: "en" | "ar";
+  defaultDialect?: DialectId;
+  defaultVoiceId?: VoiceId;
+}) {
   const { data: usage, mutate: mutateUsage } = useSWR("usage", () => getUserUsageStats(), {
     revalidateOnFocus: false
   });
@@ -89,8 +97,8 @@ export function VoiceGenerator({ lang = "ar" }: { lang?: "en" | "ar" }) {
   const [text, setText] = useState("");
   const [url, setUrl] = useState("");
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [dialect, setDialect] = useState<DialectId>("msa");
-  const [voiceId, setVoiceId] = useState<VoiceId>("ali");
+  const [dialect, setDialect] = useState<DialectId>(defaultDialect);
+  const [voiceId, setVoiceId] = useState<VoiceId>(defaultVoiceId);
   const [playbackRate, setPlaybackRate] = useState<number>(1.0);
   const [dialectOpen, setDialectOpen] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);

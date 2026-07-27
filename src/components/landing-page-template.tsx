@@ -121,6 +121,9 @@ interface LandingPageTemplateProps {
   };
   faqOverrides?: { q: string; a: string }[];
   onlyPricing?: boolean;
+  defaultDialect?: any;
+  defaultVoiceId?: any;
+  featuresOverrides?: { title: string; desc: string }[];
 }
 
 export function LandingPageTemplate({
@@ -134,6 +137,9 @@ export function LandingPageTemplate({
   heroOverrides,
   faqOverrides,
   onlyPricing = false,
+  defaultDialect = "msa",
+  defaultVoiceId = "ali",
+  featuresOverrides,
 }: LandingPageTemplateProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -173,6 +179,8 @@ export function LandingPageTemplate({
   };
 
   const resolvedFaq = faqOverrides || t.faq?.items || [];
+  const resolvedFeatures = featuresOverrides || t.features.items;
+  const gridCols = resolvedFeatures.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2 lg:grid-cols-4";
 
   return (
     <div dir={dir} className="relative text-foreground min-h-screen font-sans selection:bg-primary/20 selection:text-primary overflow-x-hidden">
@@ -286,7 +294,7 @@ export function LandingPageTemplate({
             </p>
           </div>
           <Suspense fallback={<div className="h-64 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
-            <VoiceGenerator lang={lang} />
+            <VoiceGenerator lang={lang} defaultDialect={defaultDialect} defaultVoiceId={defaultVoiceId} />
           </Suspense>
         </section>
 
@@ -296,8 +304,8 @@ export function LandingPageTemplate({
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{t.features.title}</h2>
             <p className="text-muted-foreground text-sm">{t.features.subtitle}</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {t.features.items.map((f, i) => (
+          <div className={`grid grid-cols-1 ${gridCols} gap-6`}>
+            {resolvedFeatures.map((f, i) => (
               <div 
                 key={i} 
                 className={`group bg-card border border-border/75 rounded-2xl p-6 ${featureColors[i].hoverCard} hover:-translate-y-1 transition-all duration-500 cursor-default flex flex-col`}
@@ -529,6 +537,9 @@ export function LandingPageTemplate({
           <div className="flex flex-wrap items-center justify-center gap-5 text-xs text-muted-foreground">
             <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.product}</a>
             <a href="#pricing" className="hover:text-primary transition-colors duration-200">{t.footer.pricing}</a>
+            <Link href={`/${lang}/egyptian-voice`} className="hover:text-primary transition-colors duration-200">
+              {lang === "ar" ? "لهجة مصرية" : "Egyptian Voice"}
+            </Link>
             <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.privacy}</a>
             <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.terms}</a>
             <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.contact}</a>

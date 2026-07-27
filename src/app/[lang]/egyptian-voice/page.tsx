@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import { HomePageClient } from "@/components/home-page-client";
+import { EgyptianVoiceClient } from "@/components/egyptian-voice-client";
 import { type Lang } from "@/lib/translations";
 import type { Metadata } from "next";
 
-// Statically pre-render [lang] paths for english and arabic
+// Statically pre-render [lang]/egyptian-voice paths for english and arabic
 export function generateStaticParams() {
   return [{ lang: "en" }, { lang: "ar" }];
 }
@@ -22,27 +22,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const siteUrl = "https://getsawti.com";
   const title = lang === "ar" 
-    ? "صوتي – تعليق صوتي بالذكاء الاصطناعي وتحويل النص إلى كلام" 
-    : "Sawti – Arabic AI Voiceover & Text to Speech | Real Arabic Voices";
+    ? "صوت مصري بالذكاء الاصطناعي – تعليق صوتي باللهجة المصرية | صوتي" 
+    : "Egyptian Arabic Voice Generator – AI Voiceover in Egyptian Dialect | Sawti";
   const description = lang === "ar"
-    ? "أنشئ تعليقاً صوتياً عربياً احترافياً بالذكاء الاصطناعي في ثوانٍ. أصوات عربية طبيعية للفيديوهات والمونتاج والتعليم. جرّب مجاناً بدون تسجيل."
-    : "Create professional Arabic voiceovers with AI in seconds. Natural Arabic voices for videos, e-learning, and content creators. Try it free, no signup needed.";
+    ? "أنشئ تعليقاً صوتياً بصوت مصري طبيعي بالذكاء الاصطناعي. اكتب النص واسمع النتيجة في ثوانٍ. مثالي للفيديوهات والإعلانات والمونتاج. جرّب مجاناً."
+    : "Generate natural Egyptian Arabic voiceovers with AI. Authentic Egyptian dialect voices for videos, ads, and content. Type your text and listen in seconds. Free to try.";
 
   return {
     title,
     description,
     alternates: {
-      canonical: `${siteUrl}/${lang}`,
+      canonical: `${siteUrl}/${lang}/egyptian-voice`,
       languages: {
-        en: `${siteUrl}/en`,
-        ar: `${siteUrl}/ar`,
-        "x-default": `${siteUrl}/ar`, // default to Arabic
+        en: `${siteUrl}/en/egyptian-voice`,
+        ar: `${siteUrl}/ar/egyptian-voice`,
+        "x-default": `${siteUrl}/ar/egyptian-voice`, // default to Arabic
       },
     },
     openGraph: {
       title,
       description,
-      url: `${siteUrl}/${lang}`,
+      url: `${siteUrl}/${lang}/egyptian-voice`,
       siteName: "Sawti | صوتي",
       locale: lang === "ar" ? "ar_AR" : "en_US",
       type: "website",
@@ -62,5 +62,5 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  return <HomePageClient lang={lang as Lang} />;
+  return <EgyptianVoiceClient lang={lang as Lang} />;
 }

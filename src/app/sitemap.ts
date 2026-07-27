@@ -5,7 +5,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const locales = ["en", "ar"];
 
   // List of public landing routes relative to languages
-  const publicPaths = ["", "pricing"];
+  const publicPaths = ["", "pricing", "egyptian-voice"];
 
   const sitemapEntries: MetadataRoute.Sitemap = [];
 
