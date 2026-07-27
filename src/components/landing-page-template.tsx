@@ -535,14 +535,14 @@ export function LandingPageTemplate({
           </div>
           
           <div className="flex flex-wrap items-center justify-center gap-5 text-xs text-muted-foreground">
-            <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.product}</a>
-            <a href="#pricing" className="hover:text-primary transition-colors duration-200">{t.footer.pricing}</a>
+            <Link href={`/${lang}/pricing`} className="hover:text-primary transition-colors duration-200">
+              {t.footer.pricing}
+            </Link>
             <Link href={`/${lang}/egyptian-voice`} className="hover:text-primary transition-colors duration-200">
               {lang === "ar" ? "لهجة مصرية" : "Egyptian Voice"}
             </Link>
             <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.privacy}</a>
             <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.terms}</a>
-            <a href="#"        className="hover:text-primary transition-colors duration-200">{t.footer.contact}</a>
           </div>
         </div>
       </footer>
