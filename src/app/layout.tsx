@@ -46,7 +46,7 @@ export default async function RootLayout({
   const dir = isAr ? "rtl" : "ltr";
 
   return (
-    <ClerkProvider>
+    <ClerkProvider signInForceRedirectUrl="/" signUpForceRedirectUrl="/">
       <html
         lang={lang}
         dir={dir}
