@@ -30,16 +30,24 @@ function FAQItem({ q, a, isAr }: { q: string; a: string; isAr: boolean }) {
           <Plus className="w-4 h-4 text-primary shrink-0" />
         )}
       </button>
-      {isOpen && (
-        <p 
-          className={`mt-3 text-muted-foreground text-xs md:text-sm leading-relaxed ${
-            isAr ? "text-right" : "text-left"
-          } animate-in fade-in duration-300`} 
-          dir={isAr ? "rtl" : "ltr"}
-        >
-          {a}
-        </p>
-      )}
+      
+      {/* Container is always rendered in the HTML for SEO indexing, but collapsed visually */}
+      <div 
+        className={`grid transition-all duration-300 ease-in-out ${
+          isOpen ? "grid-rows-[1fr] opacity-100 mt-3" : "grid-rows-[0fr] opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <p 
+            className={`text-muted-foreground text-xs md:text-sm leading-relaxed ${
+              isAr ? "text-right" : "text-left"
+            }`} 
+            dir={isAr ? "rtl" : "ltr"}
+          >
+            {a}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -196,12 +204,12 @@ export function LandingPageTemplate({
             
             {isLoaded && !userId && (
               <>
-                <SignInButton mode="modal">
+                <SignInButton mode="modal" forceRedirectUrl="/" signUpForceRedirectUrl="/">
                   <button className="text-muted-foreground hover:text-foreground text-sm font-medium px-4 py-2 hidden sm:block transition-colors duration-200">
                     {t.nav.signIn}
                   </button>
                 </SignInButton>
-                <SignInButton mode="modal">
+                <SignInButton mode="modal" forceRedirectUrl="/" signUpForceRedirectUrl="/">
                   <button className="px-5 py-2 h-9 bg-primary text-white rounded-full text-sm font-semibold hover:bg-primary/90 hover:shadow-[0_0_18px_rgba(124,92,255,0.45)] active:scale-95 transition-all duration-200">
                     {t.nav.startNow}
                   </button>
