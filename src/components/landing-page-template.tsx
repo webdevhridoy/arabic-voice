@@ -253,6 +253,7 @@ export function LandingPageTemplate({
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.12] mb-4 tracking-tight max-w-5xl" style={{ fontFamily: "var(--font-headline)" }}>
               <span className="text-foreground">{resolvedHero.headline1} </span>
+              {lang === "ar" && <br />}
               <span className="text-gradient">{resolvedHero.headline2} </span>
               <span className="text-foreground">{resolvedHero.headline3}</span>
             </h1>
