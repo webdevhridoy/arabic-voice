@@ -251,7 +251,7 @@ export function LandingPageTemplate({
               <span>{resolvedHero.badge}</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.12] mb-4 tracking-tight max-w-5xl" style={{ fontFamily: "var(--font-headline)" }}>
+            <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 tracking-tight max-w-5xl ${lang === "ar" ? "leading-[1.38] md:leading-[1.45]" : "leading-[1.12]"}`} style={{ fontFamily: "var(--font-headline)" }}>
               <span className="text-foreground">{resolvedHero.headline1} </span>
               {lang === "ar" && <br />}
               <span className="text-gradient">{resolvedHero.headline2} </span>
