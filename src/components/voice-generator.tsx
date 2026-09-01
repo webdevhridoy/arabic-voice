@@ -533,7 +533,7 @@ export function VoiceGenerator({
             <div className="mt-6 border-t border-gray-200 dark:border-white/5 pt-5 space-y-5">
 
               {/* ── Persistent Upgrade Plan button (Free Users Only) ───────────────── */}
-              {(!usage || usage.limit <= 10_000) && (
+              {(!usage || usage.limit <= 5_000) && (
                 <button
                   onClick={() => setShowUpgrade(true)}
                   disabled={isSubmitting}

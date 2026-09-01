@@ -145,7 +145,7 @@ export const translations = {
           price: "$0",
           period: "/forever",
           features: [
-            "10,000 characters lifetime",
+            "5,000 characters lifetime",
             "All Arabic dialects",
             "All voices included",
             "No credit card required",
@@ -378,7 +378,7 @@ export const translations = {
           price: "$0",
           period: "/للأبد",
           features: [
-            "10,000 حرف مدى الحياة",
+            "5,000 حرف مدى الحياة",
             "جميع اللهجات العربية",
             "جميع الأصوات متاحة",
             "بدون بطاقة ائتمانية",
